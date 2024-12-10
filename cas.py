@@ -38,12 +38,24 @@ class Cas:
         artistes = set(artistes)
         artistesD = set(domini["artistes"])
         if not artistes <= artistesD:
-            domini["artistes"].extend([a for a in artistes if a not in artistesD])
+            if input(
+                f"Aquests artistes {artistes - artistesD} encara no estan al "
+                "domini, vols afegir-los? [si]"
+            ) == 'si':
+                domini["artistes"].extend([a for a in artistes if a not in artistesD])
+            else:
+                raise Exception("Artistes fora el domini")
 
         periodes = set(periodes)
         periodesD = set(domini["periodes"])
         if not periodes <= periodesD:
-            domini["periodes"].extend([e for e in periodes if e not in periodesD])
+            if input(
+                f"Aquests periodes {periodes - periodesD} encara no estan al "
+                "domini, vols afegir-los? [si]"
+            ) == 'si':
+                domini["periodes"].extend([e for e in periodes if e not in periodesD])
+            else:
+                raise Exception("Periodes fora el domini")
         
         with open(path_domini, 'w') as f:
             json.dump(domini, f)
@@ -71,7 +83,13 @@ class Cas:
         obres = set(obres)
         obresD = set(domini["obres"])
         if not obres <= obresD:
-            domini["obres"].extend([e for e in obres if e not in obresD])
+            if input(
+                f"Aquestes obres {obres - obresD} encara no estan al "
+                "domini, vols afegir-les? [si]"
+            ) == 'si':
+                domini["obres"].extend([e for e in obres if e not in obresD])
+            else:
+                raise Exception("Obres fora el domini")
         
         with open(path_domini, 'w') as f:
             json.dump(domini, f)
