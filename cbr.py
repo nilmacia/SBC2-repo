@@ -25,7 +25,7 @@ class Node:
             else:
                 dist = np.sqrt(np.sum(((case - self.cases) * d_weights)**2, -1))
                 closest = self.cases[np.argmin(dist)]
-                self.cases = np.concat([self.cases, [case]])
+                self.cases = np.concatenate([self.cases, [case]])
                 return closest
         
 layer_thresholds = [4, 30, 4, 2, 1, 1, 1, 1, 1]
