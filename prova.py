@@ -3,22 +3,14 @@ from case_base import Node
 
 import numpy as np
 
-def generate_synthetic_cases(num_cases):
-    """
-    Genera una base de casos sintètics seguint el format especificat.
-    :param num_cases: Nombre de casos sintètics a generar.
-    :return: Llista de casos sintètics.
-    """
-    synthetic_cases = []
-    for i in range(num_cases):
-        nombre = i + 1  # Identificador únic
-        edat = np.random.randint(5, 91)  # Edat entre 5 i 90 anys
-        hores = np.random.randint(1, 9)  # Hores entre 1 i 8
-        dies = np.random.randint(1, 8)  # Dies entre 1 i 7
-        preferències = np.random.randint(0, 2, size=5)  # 5 valors booleans (0 o 1)
-        case = np.array([nombre, edat, hores, dies, *preferències])
-        synthetic_cases.append(case)
-    return synthetic_cases
+synthetic_cases = [[2, 30, 3, 1, 0, 0, 0, 1, 0],
+    [2, 25, 6, 1, 0, 0, 0, 0, 1],
+    [4, 25, 2, 1, 1, 0, 0, 0, 0],
+    [4, 35, 8, 1, 0, 0, 0, 0, 1],
+    [1, 50, 6, 2, 0, 1, 0, 1, 0],
+    [2, 50, 6, 2, 0, 1, 0, 1, 0],
+    [10, 12, 4, 1, 0, 1, 0, 0, 0],
+    [10, 15, 6, 1, 0, 1, 0, 0, 0]]
 
 
 def introduce_synthetic_cases(crb_system, cases):
@@ -46,9 +38,6 @@ root = nodes[0]
 
 # Inicialitzem el sistema CRB amb l'arrel de l'arbre
 crb_system = CBR(root)
-
-# Generem 10 casos sintètics
-synthetic_cases = generate_synthetic_cases(50)
 
 # Introduïm els casos al sistema
 introduce_synthetic_cases(crb_system, synthetic_cases)
