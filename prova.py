@@ -1,4 +1,4 @@
-from cbr import CRB
+from cbr import CBR
 from case_base import Node
 
 import numpy as np
@@ -45,7 +45,7 @@ for i in reversed(range(len(d_weights))):
 root = nodes[0]
 
 # Inicialitzem el sistema CRB amb l'arrel de l'arbre
-crb_system = CRB(root)
+crb_system = CBR(root)
 
 # Generem 10 casos sintètics
 synthetic_cases = generate_synthetic_cases(50)

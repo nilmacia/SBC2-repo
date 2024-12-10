@@ -1,7 +1,7 @@
 import numpy as np
 from case_base import Node
 
-class CRB:
+class CBR:
     def __init__(self, root):
         self.root = root  # Arrel de l'arbre jeràrquic de nodes
 
