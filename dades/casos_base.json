@@ -1,0 +1,31 @@
+{
+    "individu": {
+        "jove": {
+            "atributs": [],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "adult": null,
+        "vell": null
+    },
+    "parella": {
+        "jove": null,
+        "adulta": null,
+        "vella": null
+    },
+    "família": {
+        "petita": {
+            "nens": null,
+            "adolescents": null
+        },
+        "gran": {
+            "nens": null,
+            "adolescents": null
+        }
+    },
+    "classe": null,
+    "amics": null,
+    "turistes": null,
+    "imserso": null
+}
