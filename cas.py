@@ -31,5 +31,13 @@ class Cas:
 
         with open("data/domini.json") as f:
             domini = json.load(f)
-    
-    def array(self):
+        
+        autors = set(autors)
+        autorsD = set(domini["autors"])
+        if not autors <= autorsD:
+            domini["autors"].extend([a for a in autors if a not in autorsD])
+
+        estils = set(estils)
+        estilsD = set(domini["estils"])
+        if not estils <= estilsD:
+            domini["estils"].extend([e for e in estils if e not in estilsD])
