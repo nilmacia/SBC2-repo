@@ -1,7 +1,7 @@
 import json
 import numpy as np
 
-path_domini = "data/domini.json"
+path_domini = "dades/domini.json"
 
 class Cas:
     def __init__(self, nombre: int, edat: int, hores: int, dies: int,
