@@ -5,7 +5,7 @@ path_domini = "dades/domini.json"
 
 class Cas:
     def __init__(self, nombre: int, edat: int, hores: int, dies: int,
-                 artistes: list[str] = [], periodes: list[str] = []):
+                 artistes: list[str] = [], periodes: list[str] = [], force: bool = False):
         """
         - nombre: int[1,  15]
         - edat (mitjana): int[0, 100]
@@ -15,8 +15,7 @@ class Cas:
         - periodes: list[str]
         
         Per construir els vectors binaris s'utilitza el fitxer data/domini.json.
-        Els artistes i periodes mai vistos s'afegiran (i per tant la mida dels
-        vetors augmentarà).
+        Els artistes i periodes mai vistos s'afegiran (i per tant la mida dels vetors augmentarà).
         Intentem no fer innecessàriament gran el domini de moment.
         """
 
@@ -38,9 +37,9 @@ class Cas:
         artistes = set(artistes)
         artistesD = set(domini["artistes"])
         if not artistes <= artistesD:
-            if input(
-                f"Aquests artistes {artistes - artistesD} encara no estan al "
-                "domini, vols afegir-los? [si]"
+            if force or input(
+                f"Aquests artistes {artistes - artistesD} encara no estan al domini. "
+                "Vols afegir-los? [si]"
             ) == 'si':
                 domini["artistes"].extend([a for a in artistes if a not in artistesD])
             else:
@@ -49,9 +48,9 @@ class Cas:
         periodes = set(periodes)
         periodesD = set(domini["periodes"])
         if not periodes <= periodesD:
-            if input(
-                f"Aquests periodes {periodes - periodesD} encara no estan al "
-                "domini, vols afegir-los? [si]"
+            if force or input(
+                f"Aquests periodes {periodes - periodesD} encara no estan al domini. "
+                "Vols afegir-los? [si]"
             ) == 'si':
                 domini["periodes"].extend([e for e in periodes if e not in periodesD])
             else:
@@ -60,15 +59,13 @@ class Cas:
         with open(path_domini, 'w') as f:
             json.dump(domini, f)
 
-    def recomanar(self, obres: list[str]) -> None:
+    def recomanar(self, obres: list[str], force: bool = False) -> None:
         """
-        Ens interessa més assignar-les com una llista d'strings o com el vector
-        binari??
+        Ens interessa més assignar-les com una llista d'strings o com el vector binari??
         Ja ho cambiarem
 
         Per construir els vectors binaris s'utilitza el fitxer data/domini.json.
-        Les obres mai vistos s'afegiran (i per tant la mida dels
-        vetors augmentarà).
+        Les obres mai vistos s'afegiran (i per tant la mida dels vectors augmentarà).
         Intentem no fer innecessàriament gran el domini de moment.
         """
 
@@ -83,7 +80,7 @@ class Cas:
         obres = set(obres)
         obresD = set(domini["obres"])
         if not obres <= obresD:
-            if input(
+            if force or input(
                 f"Aquestes obres {obres - obresD} encara no estan al "
                 "domini, vols afegir-les? [si]"
             ) == 'si':
@@ -96,8 +93,8 @@ class Cas:
 
     def array_feats(self) -> np.ndarray:
         """
-        Retorna el vector dels 4 atributs "nombre", "edat", "hores" i "dies";
-        seguit dels dos vectors binaris per "artistes" i "periodes"
+        Retorna el vector dels 4 atributs "nombre", "edat", "hores" i "dies"; seguit dels dos
+        vectors binaris per "artistes" i "periodes"
         """
 
         atributs = np.array([self.nombre, self.edat, self.hores, self.dies])
