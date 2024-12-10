@@ -48,3 +48,30 @@ print(root.feed(casos[0]))
 
 from cas import *
 Cas()
+
+
+def avaluar_arbre(casos,d_weights):
+    """
+    L'he fet amb la variància ponderada quan es podria fer amb el index de gini o qualsevol altre mètode d'avaluació
+    Triant el atribut que divideix millor es podria actualitzar l'arbre per aquest atribut
+    """
+    num_attributes = casos.shape[1]
+    best_attribute = None
+    best_score = float('inf') 
+
+    for i in range(num_attributes):
+        threshold = np.unique(casos[:, i])
+        for t in threshold:
+            left_cases = casos[casos[:, i] < t]
+            right_cases = casos[casos[:, i] >= t]
+
+            if len(left_cases) == 0 or len(right_cases) == 0:
+                continue
+            score = (len(left_cases) * np.var(left_cases, axis=0).sum() +
+                     len(right_cases) * np.var(right_cases, axis=0).sum())
+
+            if score < best_score:
+                best_score = score
+                best_attribute = (i, threshold)
+
+    return best_attribute
