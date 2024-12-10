@@ -1,49 +1,49 @@
 import json
 import numpy as np
 
-path_domini = "data/domini.json"
+path_domini = "dades/domini.json"
 
 class Cas:
     def __init__(self, nombre: int, edat: int, hores: int, dies: int,
-                 autors: list[str] = [], estils: list[str] = []):
+                 artistes: list[str] = [], periodes: list[str] = []):
         """
         - nombre: int[1,  15]
         - edat (mitjana): int[0, 100]
         - hores: int[1,  12]
         - dies: int[1,   5]
-        - autors: list[str]
-        - estils: list[str]
+        - artistes: list[str]
+        - periodes: list[str]
         
         Per construir els vectors binaris s'utilitza el fitxer data/domini.json.
-        Els autors i estils mai vistos s'afegiran (i per tant la mida dels
+        Els artistes i periodes mai vistos s'afegiran (i per tant la mida dels
         vetors augmentarà).
         Intentem no fer innecessàriament gran el domini de moment.
         """
 
         assert all(isinstance(x, int) for x in [nombre, edat, hores, dies])
-        assert all(isinstance(x, list) for x in [autors, estils])
-        assert all(isinstance(x, str) for x in autors + estils)
+        assert all(isinstance(x, list) for x in [artistes, periodes])
+        assert all(isinstance(x, str) for x in artistes + periodes)
 
         self.nombre = nombre
         self.edat = edat
         self.hores = hores
         self.dies = dies
-        self.autors = autors
-        self.estils = estils
+        self.artistes = artistes
+        self.periodes = periodes
         self.obres = None
 
         with open(path_domini) as f:
             domini = json.load(f)
         
-        autors = set(autors)
-        autorsD = set(domini["autors"])
-        if not autors <= autorsD:
-            domini["autors"].extend([a for a in autors if a not in autorsD])
+        artistes = set(artistes)
+        artistesD = set(domini["artistes"])
+        if not artistes <= artistesD:
+            domini["artistes"].extend([a for a in artistes if a not in artistesD])
 
-        estils = set(estils)
-        estilsD = set(domini["estils"])
-        if not estils <= estilsD:
-            domini["estils"].extend([e for e in estils if e not in estilsD])
+        periodes = set(periodes)
+        periodesD = set(domini["periodes"])
+        if not periodes <= periodesD:
+            domini["periodes"].extend([e for e in periodes if e not in periodesD])
         
         with open(path_domini, 'w') as f:
             json.dump(domini, f)
@@ -79,7 +79,7 @@ class Cas:
     def array_feats(self) -> np.ndarray:
         """
         Retorna el vector dels 4 atributs "nombre", "edat", "hores" i "dies";
-        seguit dels dos vectors binaris per "autors" i "estils"
+        seguit dels dos vectors binaris per "artistes" i "periodes"
         """
 
         atributs = np.array([self.nombre, self.edat, self.hores, self.dies])
@@ -87,10 +87,10 @@ class Cas:
         with open(path_domini) as f:
             domini = json.load(f)
         
-        autors = np.isin(domini["autors"], self.autors).astype(int)
-        estils = np.isin(domini["estils"], self.estils).astype(int)
+        artistes = np.isin(domini["artistes"], self.artistes).astype(int)
+        periodes = np.isin(domini["periodes"], self.periodes).astype(int)
         
-        return np.concat([atributs, autors, estils])
+        return np.concat([atributs, artistes, periodes])
 
     def array_obres(self) -> np.ndarray:
         """
