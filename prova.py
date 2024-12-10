@@ -1,5 +1,5 @@
 from cbr import CBR
-from case_base import Node
+from base_casos import Node
 
 import numpy as np
 

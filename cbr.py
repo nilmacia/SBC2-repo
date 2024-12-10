@@ -1,5 +1,5 @@
 import numpy as np
-from case_base import Node
+from base_casos import Node
 
 class CBR:
     def __init__(self, root):
