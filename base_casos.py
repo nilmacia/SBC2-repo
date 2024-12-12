@@ -20,12 +20,10 @@ class Node:
         else:
             if self.cases is None:
                 self.cases = np.stack([case])
-                return
+                return self.cases  # Retornem els casos emmagatzemats (només un en aquest punt)
             else:
-                dist = np.sqrt(np.sum(((case - self.cases) * d_weights)**2, -1))
-                closest = self.cases[np.argmin(dist)]
-                self.cases = np.concat([self.cases, [case]])
-                return closest
+                return self.cases  # Retornem tots els casos emmagatzemats a la fulla
+
         
 layer_thresholds = [4, 30, 4, 2, 1, 1, 1, 1, 1]
 

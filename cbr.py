@@ -2,20 +2,59 @@ import numpy as np
 from base_casos import Node
 
 class CBR:
-    def __init__(self, root):
-        self.root = root  # Arrel de l'arbre jeràrquic de nodes
+    def __init__(self, root, artist_weight=1.0, period_weight=1.0):
+        """
+        Inicialitza el sistema amb l'arrel i els pesos per artistes i periodes.
+        """
+        self.root = root
+        self.artist_weight = artist_weight
+        self.period_weight = period_weight
+
+    def calculate_distance(self, case, leaf_case):
+        """
+        Calcula la distància entre dos casos, considerant artistes i periodes.
+        """
+        # Distància numèrica ponderada
+        numeric_distance = np.sqrt(np.sum(((leaf_case.to_array() - case.to_array()) ** 2)))
+
+        # Distància conjunta per artistes i periodes (Jaccard combinada)
+        artists1, artists2 = set(leaf_case.artistes), set(case.artistes)
+        periods1, periods2 = set(leaf_case.periodes), set(case.periodes)
+
+        # Jaccard per artistes
+        artist_similarity = len(artists1 & artists2) / len(artists1 | artists2) if artists1 | artists2 else 0
+        artist_distance = 1 - artist_similarity
+
+        # Jaccard per periodes
+        period_similarity = len(periods1 & periods2) / len(periods1 | periods2) if periods1 | periods2 else 0
+        period_distance = 1 - period_similarity
+
+        # Combinar artistes i periodes segons els pesos
+        combined_distance = (artist_distance * self.artist_weight + 
+                             period_distance * self.period_weight) / (self.artist_weight + self.period_weight)
+
+        # Suma ponderada de les distàncies
+        total_distance = numeric_distance + combined_distance
+        return total_distance
 
     def retrieve(self, case):
         """
-        Busca el cas més proper en el sistema de casos.
+        Busca el cas més proper en el sistema de casos, considerant artistes i periodes.
         """
         print("=== Retrieve ===")
-        closest_case = self.root.feed(case)
-        if closest_case is None:
+        leaf_cases = self.root.feed(case)  # Recuperem tots els casos de la fulla
+        if leaf_cases is None or len(leaf_cases) == 0:
             print("  -> No s'ha trobat cap cas similar (nou cas).")
+            return None
         else:
-            print(f"  -> Cas recuperat: {closest_case}")
-        return closest_case
+            distances = [
+                self.calculate_distance(case, leaf_case) for leaf_case in leaf_cases
+            ]
+            distances = np.array(distances)
+            closest_case_idx = np.argmin(distances)
+            closest_case = leaf_cases[closest_case_idx]
+            print(f"  -> Cas recuperat: {closest_case} amb distància mínima: {distances[closest_case_idx]}")
+            return closest_case
 
     def reuse(self, closest_case, case):
         """
