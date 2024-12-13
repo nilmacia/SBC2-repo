@@ -50,7 +50,7 @@ from cas import *
 Cas()
 
 
-def avaluar_arbre(casos,d_weights):
+def avaluar_arbre(casos):
     """
     L'he fet amb la variància ponderada quan es podria fer amb el index de gini o qualsevol altre mètode d'avaluació
     Triant el atribut que divideix millor es podria actualitzar l'arbre per aquest atribut
