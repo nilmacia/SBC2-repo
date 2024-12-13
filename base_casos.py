@@ -25,15 +25,25 @@ class Node:
                 return self.cases  # Retornem tots els casos emmagatzemats a la fulla
 
         
-layer_thresholds = [4, 30, 4, 2, 1, 1, 1, 1, 1]
+layer_thresholds = [
+    [1, 5], 
+    [14, 65],   
+    [2, 4], 
+    [1, 2],
+    [1],
+    [1],
+    [1],
+    [1],
+    [1]]
 
-node_stack = [Node() for _ in range(2**len(d_weights))]
+node_stack = [Node() for _ in range(sum(len(th) +1 for th in layer_thresholds))]
 
-for i in reversed(range(len(d_weights))):
-    for _ in range(int(2**i)):
-        node = Node(i, [layer_thresholds[i]], node_stack[:2])
+for i, thresholds in reversed(list(enumerate(layer_thresholds))):
+    num_nodes_at_level = len(thresholds) + 1
+    for _ in range(num_nodes_at_level):
+        node = Node(i, thresholds, node_stack[:len(thresholds) + 1])
         node_stack.append(node)
-        del node_stack[:2]
+        del node_stack[:len(thresholds) + 1]
 
 root = node_stack[0]
 
@@ -46,30 +56,3 @@ print(root.feed(casos[0]))
 
 from cas import *
 Cas()
-
-
-def avaluar_arbre(casos):
-    """
-    L'he fet amb la variància ponderada quan es podria fer amb el index de gini o qualsevol altre mètode d'avaluació
-    Triant el atribut que divideix millor es podria actualitzar l'arbre per aquest atribut
-    """
-    num_attributes = casos.shape[1]
-    best_attribute = None
-    best_score = float('inf') 
-
-    for i in range(num_attributes):
-        threshold = np.unique(casos[:, i])
-        for t in threshold:
-            left_cases = casos[casos[:, i] < t]
-            right_cases = casos[casos[:, i] >= t]
-
-            if len(left_cases) == 0 or len(right_cases) == 0:
-                continue
-            score = (len(left_cases) * np.var(left_cases, axis=0).sum() +
-                     len(right_cases) * np.var(right_cases, axis=0).sum())
-
-            if score < best_score:
-                best_score = score
-                best_attribute = (i, threshold)
-
-    return best_attribute
