@@ -68,6 +68,7 @@ class CBR:
             #IDENTIFICAR DIFERENCIES
             #ADAPTAR DIFERENCIES
             #SI SON + GENT, + DIES, + HORES O DIFERENT EDAT -> CANVIAR TEMPS/ ADAPTAR OBRES VISTES
+            #PREFERENCIES DIFERENTS -> AFEGIR OBRES PREFERENCIA , ELIMINAR OBRES NO PREFERENCIA???
             print(f"  -> Reutilitzant el cas recuperat {closest_case} per adaptar-lo al nou cas.")
             solution = {"adapted_solution": f"adapted_from_{closest_case}"}
         print(f"  -> Solució inicial: {solution}")
