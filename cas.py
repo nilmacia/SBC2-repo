@@ -4,8 +4,8 @@ import numpy as np
 path_domini = "dades/domini.json"
 
 class Cas:
-    def __init__(self, nombre: int, edat: int, hores: int, dies: int,
-                 artistes: list[str] = [], periodes: list[str] = [], valoracio: int, force: bool = False):
+    def __init__(self, nombre: int, edat: int, hores: int, dies: int, tipus: str,
+                 artistes: list[str] = [], periodes: list[str] = [], valoracio: int = 0, force: bool = False):
         """
         - nombre: int[1,  15]
         - edat (mitjana): int[0, 100]
@@ -27,6 +27,7 @@ class Cas:
         self.edat = edat
         self.hores = hores
         self.dies = dies
+        self.tipus = tipus
         self.artistes = artistes
         self.periodes = periodes
         self.valoracio = valoracio

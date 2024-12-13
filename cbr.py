@@ -65,6 +65,9 @@ class CBR:
             print("  -> No hi ha cap cas per reutilitzar, es crea una nova solució des de zero.")
             solution = {"adapted_solution": "default_solution"}  # Solució base per nous casos
         else:
+            #IDENTIFICAR DIFERENCIES
+            #ADAPTAR DIFERENCIES
+            #SI SON + GENT, + DIES, + HORES O DIFERENT EDAT -> CANVIAR TEMPS/ ADAPTAR OBRES VISTES
             print(f"  -> Reutilitzant el cas recuperat {closest_case} per adaptar-lo al nou cas.")
             solution = {"adapted_solution": f"adapted_from_{closest_case}"}
         print(f"  -> Solució inicial: {solution}")
