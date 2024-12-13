@@ -30,13 +30,14 @@ layer_thresholds = [
     [14, 65],   
     [2, 4], 
     [1, 2],
-    [1],
-    [1],
-    [1],
-    [1],
-    [1]]
+    #[1],
+    #[1],
+    #[1],
+    #[1],
+    #[1]
+    ]
 
-node_stack = [Node() for _ in range(sum(len(th) +1 for th in layer_thresholds))]
+node_stack = [Node() for _ in range(sum(len(th) + 1 for th in layer_thresholds))]
 
 for i, thresholds in reversed(list(enumerate(layer_thresholds))):
     num_nodes_at_level = len(thresholds) + 1
