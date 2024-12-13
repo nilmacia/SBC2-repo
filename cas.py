@@ -5,7 +5,7 @@ path_domini = "dades/domini.json"
 
 class Cas:
     def __init__(self, nombre: int, edat: int, hores: int, dies: int,
-                 artistes: list[str] = [], periodes: list[str] = [], force: bool = False):
+                 artistes: list[str] = [], periodes: list[str] = [], valoracio: int, force: bool = False):
         """
         - nombre: int[1,  15]
         - edat (mitjana): int[0, 100]
@@ -29,6 +29,7 @@ class Cas:
         self.dies = dies
         self.artistes = artistes
         self.periodes = periodes
+        self.valoracio = valoracio
         self.obres = None
 
         with open(path_domini) as f:
