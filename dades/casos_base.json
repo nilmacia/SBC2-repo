@@ -6,26 +6,29 @@
             "periodes": [],
             "obres": []
         },
-        "adult": null,
-        "vell": null
+        "adult": [],
+        "vell": []
     },
     "parella": {
-        "jove": null,
-        "adulta": null,
-        "vella": null
+        "jove": [],
+        "adulta": [],
+        "vella": []
     },
     "família": {
-        "petita": {
-            "nens": null,
-            "adolescents": null
-        },
-        "gran": {
-            "nens": null,
-            "adolescents": null
-        }
+        "nens": null,
+        "adolescents": null
     },
-    "classe": null,
-    "amics": null,
-    "turistes": null,
-    "imserso": null
+    "classe": {
+        "nens": [],
+        "adolescents": []
+    },
+    "amics": {
+        "petit": [],
+        "gran": []
+    },
+    "turistes": {
+        "petit": [],
+        "gran": []
+    },
+    "imserso": []
 }
