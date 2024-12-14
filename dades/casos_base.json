@@ -1,34 +1,102 @@
 {
     "individu": {
         "jove": {
-            "atributs": [],
+            "atributs": [1, 25, 4, 1],
             "artistes": [],
             "periodes": [],
             "obres": []
         },
-        "adult": [],
-        "vell": []
+        "adult": {
+            "atributs": [1, 50, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "vell": {
+            "atributs": [1, 75, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        }
     },
     "parella": {
-        "jove": [],
-        "adulta": [],
-        "vella": []
-    },
-    "família": {
-        "nens": null,
-        "adolescents": null
-    },
-    "classe": {
-        "nens": [],
-        "adolescents": []
+        "jove": {
+            "atributs": [2, 25, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "adulta": {
+            "atributs": [2, 50, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "vella": {
+            "atributs": [2, 75, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        }
     },
     "amics": {
-        "petit": [],
-        "gran": []
+        "joves": {
+            "atributs": [4, 25, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "adults": {
+            "atributs": [4, 50, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "vells": {
+            "atributs": [4, 75, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        }
     },
-    "turistes": {
-        "petit": [],
-        "gran": []
+    "família": {
+        "nens": {
+            "atributs": [4, 8, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "adolescents": {
+            "atributs": [4, 15, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        }
     },
-    "imserso": []
+    "grup": {
+        "nens": {
+            "atributs": [15, 8, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "adolescents": {
+            "atributs": [15, 15, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "turistes": {
+            "atributs": [15, 40, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        },
+        "imserso": {
+            "atributs": [15, 75, 4, 1],
+            "artistes": [],
+            "periodes": [],
+            "obres": []
+        }
+    }
 }
