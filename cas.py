@@ -99,7 +99,7 @@ class Cas:
         vectors binaris per "artistes" i "periodes"
         """
 
-        atributs = np.array([self.nombre, self.edat, self.hores, self.dies,self.tipus])
+        atributs = np.array([self.nombre, self.edat, self.hores, self.dies, self.tipus, self.valoracio])
 
         with open(path_domini) as f:
             domini = json.load(f)
