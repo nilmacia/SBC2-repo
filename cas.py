@@ -4,8 +4,8 @@ import numpy as np
 path_domini = "dades/domini.json"
 
 class Cas:
-    def __init__(self, nombre: int, edat: int, hores: int, dies: int, tipus: str,
-                 artistes: list[str] = [], periodes: list[str] = [], valoracio: int = 0, force: bool = False):
+    def __init__(self, nombre: int, edat: int, hores: int, dies: int, tipus: int, valoracio: int,
+                 artistes: list[str] = [], periodes: list[str] = [], force: bool = False):
         """
         - nombre: int[1,  15]
         - edat (mitjana): int[0, 100]
@@ -19,7 +19,7 @@ class Cas:
         Intentem no fer innecessàriament gran el domini de moment.
         """
 
-        assert all(isinstance(x, int) for x in [nombre, edat, hores, dies])
+        assert all(isinstance(x, int) for x in [nombre, edat, hores, dies, tipus, valoracio])
         assert all(isinstance(x, list) for x in [artistes, periodes])
         assert all(isinstance(x, str) for x in artistes + periodes)
 
@@ -99,7 +99,7 @@ class Cas:
         vectors binaris per "artistes" i "periodes"
         """
 
-        atributs = np.array([self.nombre, self.edat, self.hores, self.dies])
+        atributs = np.array([self.nombre, self.edat, self.hores, self.dies,self.tipus])
 
         with open(path_domini) as f:
             domini = json.load(f)
