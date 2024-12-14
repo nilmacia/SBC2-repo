@@ -29,6 +29,7 @@ class CaseBase: # Una matriu (n_casos, dim_cas)
     def load(path: str) -> CaseBase:
         pass
 
+
 class Museum:
     """
     Representar el museu com un graf, com conjunts ordenats d'obres...
