@@ -1,5 +1,6 @@
 import numpy as np
 from base_casos import Node
+import json
 
 class CBR:
     def __init__(self, root, artist_weight=1.0, period_weight=1.0):
@@ -65,13 +66,33 @@ class CBR:
             print("  -> No hi ha cap cas per reutilitzar, es crea una nova solució des de zero.")
             solution = {"adapted_solution": "default_solution"}  # Solució base per nous casos
         else:
-            #IDENTIFICAR DIFERENCIES
-            carac_similars = [i for i, (v1, v2) in enumerate(zip(closest_case[5:], case[5:]), start=5) if v1 == v2] #Mira si hi ha artistes o periodes similars
-            if len(carac_similars) > 0:
-                print(carac_similars)
-            else:
+            #MODIFICA OBRES SEGONS PREFERENCIA(DE MOMENT SIMPLE)
+            obres_cas_proper = set(closest_case.obres)
+            artistes_a_eliminar = set(closest_case.artistes) - set(case.artistes)
+            artistes_a_afegir = set(case.artistes) - set(closest_case.artistes)
+            periodes_a_eliminar = set(closest_case.periodes) - set(case.periodes)
+            periodes_a_afegir = set(case.periodes) - set(closest_case.periodes)
+
+            obres_a_eliminar = [
+                obra for obra in obres_cas_proper
+                if any(artista in artistes_a_eliminar for artista in closest_case.artistes) or
+                any(periode in periodes_a_eliminar for periode in closest_case.periodes)
+            ]
+            obres_adaptades = obres_cas_proper - set(obres_a_eliminar)
+            with open("dades/domini.json") as f:
+                domini = json.load(f)
+            obres_a_afegir = [
+                obra for obra in domini["obres"]
+                if any(artista in artistes_a_afegir for artista in case.artistes) or
+                any(periode in periodes_a_afegir for periode in case.periodes)
+            ]
+            recom_adaptada = obres_adaptades.union(obres_a_afegir)
+
+
+
+
                 #Saber preferencies del nou cas
-                
+
             #ADAPTAR DIFERENCIES
             #SI SON + GENT, + HORES O DIFERENT EDAT -> CANVIAR TEMPS/ ADAPTAR OBRES VISTES
             #PREFERENCIES DIFERENTS -> AFEGIR OBRES PREFERENCIA , ELIMINAR OBRES NO PREFERENCIA???
