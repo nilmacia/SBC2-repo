@@ -66,8 +66,14 @@ class CBR:
             solution = {"adapted_solution": "default_solution"}  # Solució base per nous casos
         else:
             #IDENTIFICAR DIFERENCIES
+            carac_similars = [i for i, (v1, v2) in enumerate(zip(closest_case[5:], case[5:]), start=5) if v1 == v2] #Mira si hi ha artistes o periodes similars
+            if len(carac_similars) > 0:
+                print(carac_similars)
+            else:
+                #Saber preferencies del nou cas
+                
             #ADAPTAR DIFERENCIES
-            #SI SON + GENT, + DIES, + HORES O DIFERENT EDAT -> CANVIAR TEMPS/ ADAPTAR OBRES VISTES
+            #SI SON + GENT, + HORES O DIFERENT EDAT -> CANVIAR TEMPS/ ADAPTAR OBRES VISTES
             #PREFERENCIES DIFERENTS -> AFEGIR OBRES PREFERENCIA , ELIMINAR OBRES NO PREFERENCIA???
             print(f"  -> Reutilitzant el cas recuperat {closest_case} per adaptar-lo al nou cas.")
             solution = {"adapted_solution": f"adapted_from_{closest_case}"}

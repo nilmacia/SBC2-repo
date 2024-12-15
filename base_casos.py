@@ -39,6 +39,7 @@ layer_thresholds = [
     #[1]
     ]
 
+#Hi han tres funcions que permeten trobar l'ordre òptim de larbre per a que estigui més balancejat i sigui més eficient
 
 def evaluate_balance(cases, i, thresholds):
     """
@@ -52,7 +53,7 @@ def evaluate_balance(cases, i, thresholds):
     return np.var(counts) 
 
 
-def find_optimal_threshold_order(cases, i, thresholds):
+def find_optim_threshold_order(cases, i, thresholds):
     """
     Troba l'ordre de thresholds que minimitza el desequilibri per una característica `i`.
     """
@@ -74,7 +75,7 @@ def optimize_thresholds(cases, layer_thresholds):
     optimized_thresholds = []
     for i, thresholds in enumerate(layer_thresholds):
         if len(thresholds) > 1:
-            best_order, _ = find_optimal_threshold_order(cases, i, thresholds)
+            best_order, _ = find_optim_threshold_order(cases, i, thresholds)
             optimized_thresholds.append(best_order)
         else:
             optimized_thresholds.append(thresholds)  # Si només hi ha un llindar, no hi ha res a optimitzar
