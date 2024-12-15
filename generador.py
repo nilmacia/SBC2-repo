@@ -42,15 +42,21 @@ t_trasllat = 2
 n_sales = 10
 
 
+def coef(a, b, x):
+    x -= a + 5
+    x *= 5/(b - a - 5)
+    return 1/(1 + np.exp(-x))
+
 def valorar(casos):    
     # temps
     temps_previst = np.array([c.temps for c in casos])
 
-    coef = lambda n: np.linspace(np.sqrt(.5), np.sqrt(2), n)
     temps_visita = np.array([c.obres for c in casos]) * t_obra
-    temps_visita *= coef(10)[df.Relevance]
-    temps_visita *= coef(10)[df.Complexity]
-    temps_visita *= coef(4)[[3 - c.tipus for c in casos]]
+    temps_visita *= coefs(0, 9)[df.Relevance]
+    temps_visita *= coefs(10)[df.Complexity]
+    temps_visita *= coefs(15)[[15 - c.nombre for c in casos]]
+    temps_visita *= coefs(46)[[np.abs(50 - c.edat) for c in casos]]
+    temps_visita *= coefs(4)[[3 - c.tipus for c in casos]]
 
     temps_visita = temps_visita.sum(-1)
     temps_visita *= rng.normal(1, 0.2, temps_visita.shape).clip(0.4, 1.6)
