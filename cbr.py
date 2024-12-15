@@ -63,8 +63,7 @@ class CBR:
         """
         print("\n=== Reuse ===")
         if closest_case is None:
-            print("  -> No hi ha cap cas per reutilitzar, es crea una nova solució des de zero.")
-            solution = {"adapted_solution": "default_solution"}  # Solució base per nous casos
+            solution = case 
         else:
             #MODIFICA OBRES SEGONS PREFERENCIA(DE MOMENT SIMPLE)
             obres_cas_proper = set(closest_case.obres)
@@ -88,6 +87,18 @@ class CBR:
             ]
             recom_adaptada = obres_adaptades.union(obres_a_afegir)
 
+            diff_hores = closest_case.hores - case.hores
+            if diff_hores > 0:
+                pass
+                #Afegir obres
+            elif diff_hores < 0:
+                while closest_case.hores < case.hores:
+                    temps = closest_case.hores
+                
+                pass
+                #Eliminar obres
+            else:
+                pass
 
             #Saber preferencies del nou cas
 
