@@ -89,14 +89,20 @@ class CBR:
 
             diff_hores = closest_case.hores - case.hores
             if diff_hores > 0:
-                pass
-                #Afegir obres
+                temps = case.hores
+                while closest_case.hores >= temps:
+                    #recom_adaptada.append(obradeldomini)
+                    pass
+
+                #
             elif diff_hores < 0:
-                while closest_case.hores < case.hores:
-                    temps = closest_case.hores
-                
+                temps = case.hores
+                while closest_case.hores <= temps:
+                    obra = recom_adaptada[np.random.randint(0, len(recom_adaptada))]
+                    temps_obra = self.get_duration(obra)
+                    recom_adaptada.remove(obra)
+                    temps -= temps_obra
                 pass
-                #Eliminar obres
             else:
                 pass
 
