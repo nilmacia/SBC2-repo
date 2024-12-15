@@ -7,7 +7,7 @@ class Cas:
     def __init__(self, nombre, edat, hores, dies, tipus, artistes, periodes):
         self.nombre = nombre
         self.edat = edat
-        self.hores = hores
+        self.temps = dies * hores * 60
         self.dies = dies
         self.tipus = tipus
         self.artistes = artistes
@@ -22,7 +22,7 @@ class Cas:
         self.valoracio = valoracio
 
     def array_feats(self) -> np.ndarray:
-        atributs = np.array([self.nombre, self.edat, self.hores, self.dies, self.tipus, self.valoracio])
+        atributs = np.array([self.nombre, self.edat, self.temps, self.dies, self.tipus, self.valoracio])
 
         with open(path_domini) as f:
             domini = json.load(f)
