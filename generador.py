@@ -10,8 +10,8 @@ generacions = ('infant', 'adolescent', 'jove', 'adult', 'vell')
 
 tipus_visitant = (
     0, # formiga
-    1, # papallona
-    2, # saltamartí
+    1, # saltamartí
+    2, # papallona
     3  # peix
 )
 
@@ -42,19 +42,40 @@ t_trasllat = 2
 n_sales = 10
 
 
-def valorar(casos):
-    pass
+def valorar(casos):    
+    # temps
+    temps_previst = np.array([c.temps for c in casos])
+
+    coef = lambda n: np.linspace(np.sqrt(.5), np.sqrt(2), n)
+    temps_visita = np.array([c.obres for c in casos]) * t_obra
+    temps_visita *= coef(10)[df.Relevance]
+    temps_visita *= coef(10)[df.Complexity]
+    temps_visita *= coef(4)[[3 - c.tipus for c in casos]]
+
+    temps_visita = temps_visita.sum(-1)
+    temps_visita *= rng.normal(1, 0.2, temps_visita.shape).clip(0.4, 1.6)
+    
+    valoracio_temps = 
+
+    # preferencies
+    # estil
+
+    valoracio = ...
+
+    for c, v in zip(casos, valoracio):
+        c.valoracio = v
 
 
 def recomanar_random(casos):
-    t = np.array([c.hores * c.dies for c in casos])
-    t = t*60 - t_trasllat * n_sales
+    t = np.array([c.temps for c in casos])
+    t -= t_trasllat * n_sales
     n_obres_aprox = t / t_obra
     p = n_obres_aprox / df.shape[0]
     recomanacio = rng.binomial(1, p, (len(casos), df.shape[0]))
 
     for c, r in zip(casos, recomanacio):
-        c.set_obres(r)
+        c.obres = r
+
 
 def generar_casos(n):
     # MIDA
@@ -121,19 +142,19 @@ def generar_casos(n):
     tipus = np.empty(n, int)
 
     i = generacio == 'infant'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.4, 0.2, 0.3))
+    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.2, 0.4, 0.3))
 
     i = generacio == 'adolescent'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.3, 0.2, 0.4))
+    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.2, 0.3, 0.4))
 
     i = generacio == 'jove'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.2, 0.3, 0.4, 0.1))
+    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.2, 0.4, 0.3, 0.1))
 
     i = generacio == 'adult'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.3, 0.2, 0.4, 0.1))
+    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.3, 0.4, 0.2, 0.1))
 
     i = generacio == 'vell'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.4, 0.2, 0.3, 0.1))
+    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.4, 0.3, 0.2, 0.1))
 
     # ARTISTES
     noms = list(domini['artistes'])
