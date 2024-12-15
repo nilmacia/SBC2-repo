@@ -89,9 +89,7 @@ class CBR:
             recom_adaptada = obres_adaptades.union(obres_a_afegir)
 
 
-
-
-                #Saber preferencies del nou cas
+            #Saber preferencies del nou cas
 
             #ADAPTAR DIFERENCIES
             #SI SON + GENT, + HORES O DIFERENT EDAT -> CANVIAR TEMPS/ ADAPTAR OBRES VISTES
