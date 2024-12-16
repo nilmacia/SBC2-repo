@@ -8,13 +8,6 @@ rng = np.random.default_rng()
 mides = ('individu', 'parella', 'grup', 'gran')
 generacions = ('infant', 'adolescent', 'jove', 'adult', 'vell')
 
-tipus_visitant = (
-    0, # peix
-    1, # papallona
-    2, # saltamartí
-    3  # formiga
-)
-
 with open('dades/domini.json') as f:
     domini = json.load(f)
 
@@ -37,7 +30,6 @@ periodes_pop = (
 
 df = pd.read_csv('dades/obres.csv')
 
-t_obra = 5
 t_trasllat = 2
 n_sales = 10
 
@@ -57,14 +49,11 @@ def valorar(cas):
     noms_periodes = np.array(list(domini['periodes']))[cas.periodes]
 
     # temps
-    temps_obres = cas.obres * t_obra
-    temps_obres *= coef(df.Relevance, 1, 10, 0.1)
-    temps_obres *= coef(df.Complexity, 1, 10, 0.1)
+    temps_obres = df.Time * cas.obres
     temps_obres[df.Artist.isin(noms_artistes)] *= 1.1
     temps_obres[df.Period.isin(noms_periodes)] *= 1.1
     temps_obres = temps_obres.sum()
-    temps_obres *= coef(cas.edat, 5, 95, 0.25)
-    temps_obres *= coef(cas.tipus, 0, 3, 0.15)
+    temps_obres *= coef(cas.edat, 5, 95, 0.2)
 
     temps_trasllats = n_sales * t_trasllat
     temps_trasllats *= coef(np.abs(50 - cas.edat), 0, 45, 0.2)
@@ -91,7 +80,7 @@ def valorar(cas):
     else:
         dist = 0
 
-    valoracio_preferencies = bell(dist, -1, 7)
+    valoracio_preferencies = bell(dist, 7, -1)
 
     cas.valoracio = valoracio_temps * valoracio_preferencies
 
@@ -99,7 +88,7 @@ def valorar(cas):
 def recomanar_random(casos):
     t = np.array([c.temps for c in casos])
     t -= t_trasllat * n_sales
-    n_obres_aprox = t / t_obra
+    n_obres_aprox = t / df.Time.mean()
     p = n_obres_aprox / df.shape[0]
     recomanacio = rng.binomial(1, p, (len(casos), df.shape[0])).astype(bool)
 
@@ -144,7 +133,7 @@ def generar_casos(n):
     hores = np.log(edat)
     hores = (hores - np.log(5)) * (7 - 1) / (np.log(95) - np.log(5)) + 1
     hores += rng.binomial(3, 0.15, n)
-    temps = (hores * 60).round().astype(int)
+    t_dia = (hores * 60).round().astype(int)
 
     # DIES
     m = np.empty(n, int)
@@ -166,24 +155,6 @@ def generar_casos(n):
     p[generacio == 'vell'] = 0.2
 
     dies = 1 + rng.binomial(m, p)
-
-    # TIPUS
-    tipus = np.empty(n, int)
-
-    i = generacio == 'infant'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.3, 0.4, 0.2, 0.1))
-
-    i = generacio == 'adolescent'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.4, 0.3, 0.2, 0.1))
-
-    i = generacio == 'jove'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.3, 0.4, 0.2))
-
-    i = generacio == 'adult'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.2, 0.4, 0.3))
-
-    i = generacio == 'vell'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.2, 0.3, 0.4))
 
     # ARTISTES
     noms = list(domini['artistes'])
@@ -212,9 +183,8 @@ def generar_casos(n):
     return [Cas(*feats) for feats in zip(
         nombre,
         edat,
-        temps,
+        t_dia,
         dies,
-        tipus,
         artistes,
         periodes
     )]

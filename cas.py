@@ -4,12 +4,11 @@ import numpy as np
 path_domini = "dades/domini.json"
 
 class Cas:
-    def __init__(self, nombre, edat, t_dia, dies, tipus, artistes, periodes):
+    def __init__(self, nombre, edat, t_dia, dies, artistes, periodes):
         self.nombre = nombre
         self.edat = edat
         self.temps = t_dia * dies
         self.dies = dies
-        self.tipus = tipus
         self.artistes = artistes
         self.periodes = periodes
         self.valoracio = None
