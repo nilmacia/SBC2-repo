@@ -93,23 +93,19 @@ class CBR:
         a = 0.6  #VAL
         b = 0.4  #DIST (x exemple)
 
-        pesos_casos = []
+        puntuacio_obres = []
         for c, dist in casospropers:
             dist_norm = 1 - (max_dist - dist) / (max_dist - min_dist)
             
             pes_cas = a* c.valoracio + b*dist_norm
-            pesos_casos.append(pes_cas)
-
-        puntuacio_obres = []
-        for case, pes_cas in pesos_casos:
-            for obra in case.obres:
-                if obra not in cas_recomanat:
-                    if obra not in puntuacio_obres:
-                        puntuacio_obres[obra] = {"pos": 0, "neg": 0}
-                    if pes_cas > 0:
-                        puntuacio_obres[obra]["pos"] += pes_cas
-                    else:
-                        puntuacio_obres[obra]["neg"] += abs(pes_cas)
+            for obra in c.obres:
+                if obra not in puntuacio_obres:
+                    puntuacio_obres[obra] = {"pos": 0, "neg": 0}
+                if pes_cas > 0:
+                    puntuacio_obres[obra]["pos"] += pes_cas
+                else:
+                    puntuacio_obres[obra]["neg"] += abs(pes_cas)
+            
 
         probs_obres = []
         for obra,scores in puntuacio_obres.items():
@@ -119,7 +115,6 @@ class CBR:
         min_pes = min(pes for _, pes in probs_obres)
         if min_pes < 0:
             probs_obres_norm = [(obra, pes - min_pes) for obra, pes in probs_obres]
-
 
         while cas_recomanat.temps < case.temps:
             obra_seleccionada = random.choices([obra for obra, _ in probs_obres_norm], weights=[pes for _, pes in probs_obres_norm], k=1)[0]
