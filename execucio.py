@@ -10,4 +10,4 @@ for cas in casos_inicials: valorar(cas)
 arbre = Arbre()
 for cas in casos_inicials: arbre.feed(cas)
 
-cbr = CBR()
+cbr = CBR(arbre)
