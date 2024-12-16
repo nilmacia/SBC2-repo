@@ -82,12 +82,16 @@ def valorar(cas):
     preferencies = set(domini['periodes'][p] for p in noms_periodes)
     periode_artistes = set(domini['artistes'][a] for a in noms_artistes)
     preferencies.union(domini['periodes'][p] for p in periode_artistes)
-    preferencies = np.array(list(preferencies))
-    recomanacio = np.array([domini['periodes'][p] for p in obres.Period])
-    dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
-    dist[obres.Artist.isin(noms_artistes)] -= 1
+    if preferencies:
+        preferencies = np.array(list(preferencies))
+        recomanacio = np.array([domini['periodes'][p] for p in obres.Period])
+        dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
+        dist[obres.Artist.isin(noms_artistes)] -= 1
+        dist = dist.mean()
+    else:
+        dist = 0
 
-    valoracio_preferencies = bell(dist.mean(), -1, 7)
+    valoracio_preferencies = bell(dist, -1, 7)
 
     cas.valoracio = valoracio_temps * valoracio_preferencies
 
