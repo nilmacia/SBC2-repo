@@ -6,7 +6,7 @@ with open("dades/domini.json") as f:
 noms = {
     'artistes': pd.Series(list(__domini['artistes'])),
     'periodes': pd.Series(list(__domini['periodes'])),
-    'obres': pd.read_csv('dades/obres.csv').Title
+    'obres': pd.read_csv('dades/obres.csv').Titol
 }
 
 class Cas:

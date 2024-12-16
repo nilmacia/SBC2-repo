@@ -1,37 +1,30 @@
 import numpy as np
-<<<<<<< HEAD
-from base_casos import Node
 from generador import valorar
-=======
-from arbre import Node
->>>>>>> 6a2780b2e95d879d91052def3a0c7105a795cf30
 import json
 import random
 import pandas as pd
 
-path_domini = "dades/domini.json"
+with open("dades/domini.json") as f:
+    domini = json.load(f)
 
 class CBR:
-    def __init__(self, root, artist_weight=1.0, period_weight=1.0, age_weight=1.0, hours_weight=1.0):
+    def __init__(self, arbre, artist_weight=1., period_weight=1., age_weight=1., time_weight=1.):
         """
         Inicialitza el sistema amb l'arrel i els pesos per artistes, periodes, edat i hores.
         """
-        self.root = root
+        self.arbre = arbre
         self.artist_weight = artist_weight
         self.period_weight = period_weight
         self.age_weight = age_weight
-        self.hours_weight = hours_weight
+        self.time_weight = time_weight
 
     def calculate_distance(self, case, leaf_case):
         """
         Calcula la distància entre dos casos, considerant artistes, periodes, edat i hores.
         """
-        # Distància numèrica ponderada
-        numeric_distance = np.sqrt(np.sum((leaf_case.to_array() - case.to_array()) ** 2))
-
         # Distància conjunta per artistes i periodes (Jaccard combinada)
-        artists1, artists2 = set(leaf_case.artistes), set(case.artistes)
-        periods1, periods2 = set(leaf_case.periodes), set(case.periodes)
+        artists1, artists2 = set(leaf_case.noms_artistes), set(case.noms_artistes)
+        periods1, periods2 = set(leaf_case.noms_periodes), set(case.noms_periodes)
 
         # Jaccard per artistes
         artist_similarity = len(artists1 & artists2) / len(artists1 | artists2) if artists1 | artists2 else 0
@@ -45,27 +38,25 @@ class CBR:
         age_distance = abs(leaf_case.edat - case.edat) / max(leaf_case.edat, case.edat)
 
         # Distància per hores (normalitzada)
-        hours_distance = abs(leaf_case.hores - case.hores) / max(leaf_case.hores, case.hores)
+        time_distance = abs(leaf_case.temps - case.temps) / max(leaf_case.temps, case.temps)
 
         # Combinar artistes, periodes, edat i hores segons els pesos
         combined_distance = (
             artist_distance * self.artist_weight +
             period_distance * self.period_weight +
             age_distance * self.age_weight +
-            hours_distance * self.hours_weight
-        ) / (self.artist_weight + self.period_weight + self.age_weight + self.hours_weight)
+            time_distance * self.time_weight
+        ) / (self.artist_weight + self.period_weight + self.age_weight + self.time_weight)
 
-        # Suma ponderada de les distàncies
-        total_distance = numeric_distance + combined_distance
-        return total_distance
+        return combined_distance
 
     def retrieve(self, case):
         """
         Busca els 5 casos més propers en el sistema de casos, considerant artistes, periodes, edat i hores.
         """
         print("=== Retrieve ===")
-        leaf_cases = self.root.feed(case)  # Recuperem tots els casos de la fulla
-        if leaf_cases is None or len(leaf_cases) == 0:
+        leaf_cases = self.arbre.feed(case)  # Recuperem tots els casos de la fulla
+        if len(leaf_cases) == 0:
             print("  -> No s'ha trobat cap cas similar (nou cas).")
             return None
         else:
@@ -82,11 +73,11 @@ class CBR:
             top_cases = distances[:5]
 
             # Mostrar resultats
-            print("  -> Els 5 millors casos recuperats:")
+            print(f"  -> Els {len(top_cases)} millors casos recuperats:")
             for i, (retrieved_case, dist) in enumerate(top_cases, 1):
                 print(f"     {i}. Cas: {retrieved_case}, Distància: {dist:.4f}")
 
-            # Retornar els 5 millors casos
+            # Retornar els millors casos
             return top_cases
 
     def reuse(self, casospropers, case):
@@ -135,36 +126,34 @@ class CBR:
         cas_recomanat.append(obra_seleccionada)
 
         obres = pd.read_csv("dades/obres.csv")
-        with open(path_domini) as f:
-            domini = json.load(f)
         tempo = 0
-        if any(artista in domini['artistes'] for artista in case.artistes):
+        if any(artista in domini['artistes'] for artista in case.noms_artistes):
             obres_pref = []
             for _, obra in obres.iterrows(): 
-                if obra['Artist'] in case.artistes: 
+                if obra['Artista'] in case.noms_artistes: 
                     obres_pref.append(obra)
-                    tempo += obra['Time']
+                    tempo += obra['Temps']
             while tempo > 0:
                 obra_treure = cas_recomanat.pop()
-                tempo -= obra_treure['Time']
+                tempo -= obra_treure['Temps']
             for obra in obres_pref:
                 cas_recomanat.append(obra)
 
         tempo2 = 0
-        if any(periode in domini['periodes'] for periode in case.periodes):
+        if any(periode in domini['periodes'] for periode in case.noms_periodes):
             obres_pref2 = []
             for _, obra in obres.iterrows(): 
-                if obra['Period'] in case.periodes: 
+                if obra['Periode'] in case.noms_periodes: 
                     obres_pref2.append(obra)
-                    tempo2 += obra['Time']
+                    tempo2 += obra['Temps']
             
         while tempo2 > 0 and cas_recomanat: 
             obra_treure = cas_recomanat[-1] 
-            if obra_treure['Artist'] in case.artistes:
+            if obra_treure['Artista'] in case.noms_artistes:
                 cas_recomanat = cas_recomanat[:-1] + [obra_treure]
                 continue
             cas_recomanat.pop()  
-            tempo2 -= obra_treure['Time']
+            tempo2 -= obra_treure['Temps']
             for obra in obres_pref2:
                 cas_recomanat.append(obra)
 
@@ -191,8 +180,8 @@ class CBR:
         print("\n=== Retain ===")
         valorar(solution)
         valoracio = solution.valoracio
-        #if valoracio > 0.6 and valoracio < 0.4:
-        self.root.feed(case)
+        if valoracio > 0.6 and valoracio < 0.4:
+            self.root.feed(case)
 
 
     def crb(self, case):
