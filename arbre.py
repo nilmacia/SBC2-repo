@@ -12,14 +12,19 @@ class Arbre:
             self.casos = set()
         self.i = i
 
-    def feed(self, cas):
+    def __search_leaf(self, cas):
         if self.i < len(layer_th):
             for th, child in zip(layer_th[self.i], self.children):
                 if cas.classificadors[self.i] < th:
-                    return child.feed(cas)
-            return self.children[-1].feed(cas)
+                    return child.__search_leaf(cas)
+            return self.children[-1].__search_leaf(cas)
         else:
-            casos = self.casos.copy()
-            self.casos.add(cas)
-            # IMPLEMENTAR SELECCIÓ DE CASOS
-            return casos
+            return self
+
+    def fetch(self, cas):
+        leaf = self.__search_leaf(cas)
+        return leaf.casos
+
+    def feed(self, cas):
+        leaf = self.__search_leaf(cas)
+        leaf.casos.add(cas)
