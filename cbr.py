@@ -22,9 +22,6 @@ class CBR:
         """
         Calcula la distància entre dos casos, considerant artistes, periodes, edat i hores.
         """
-        # Distància numèrica ponderada
-        numeric_distance = np.sqrt(np.sum((leaf_case.to_array() - case.to_array()) ** 2))
-
         # Distància conjunta per artistes i periodes (Jaccard combinada)
         artists1, artists2 = set(leaf_case.artistes), set(case.artistes)
         periods1, periods2 = set(leaf_case.periodes), set(case.periodes)
@@ -41,19 +38,17 @@ class CBR:
         age_distance = abs(leaf_case.edat - case.edat) / max(leaf_case.edat, case.edat)
 
         # Distància per hores (normalitzada)
-        hours_distance = abs(leaf_case.hores - case.hores) / max(leaf_case.hores, case.hores)
+        time_distance = abs(leaf_case.temps - case.temps) / max(leaf_case.temps, case.temps)
 
         # Combinar artistes, periodes, edat i hores segons els pesos
         combined_distance = (
             artist_distance * self.artist_weight +
             period_distance * self.period_weight +
             age_distance * self.age_weight +
-            hours_distance * self.time_weight
+            time_distance * self.time_weight
         ) / (self.artist_weight + self.period_weight + self.age_weight + self.time_weight)
 
-        # Suma ponderada de les distàncies
-        total_distance = numeric_distance + combined_distance
-        return total_distance
+        return combined_distance
 
     def retrieve(self, case):
         """
