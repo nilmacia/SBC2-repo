@@ -1,32 +1,13 @@
 import numpy as np
 import json
 import pandas as pd
-from cas import Cas
+from cas import Cas, noms
 
 rng = np.random.default_rng()
-
-mides = ('individu', 'parella', 'grup', 'gran')
-generacions = ('infant', 'adolescent', 'jove', 'adult', 'vell')
 
 with open('dades/domini.json') as f:
     domini = json.load(f)
 
-artistes_pop = (
-    "Rembrandt (Rembrandt van Rijn)",
-    "Peter Paul Rubens",
-    "Jean Honore Fragonard",
-    "Goya (Francisco de Goya y Lucientes)",
-    "Eugene Delacroix",
-    "Jean-Francois Millet",
-    "Claude Monet",
-    "Vincent van Gogh",
-    "Edgar Degas"
-)
-
-periodes_pop = (
-    "Renaissance",
-    "Impressionism"
-)
 
 df = pd.read_csv('dades/obres.csv')
 
@@ -97,7 +78,7 @@ def recomanar_random(casos):
 
 def generar_casos(n):
     # MIDA
-    mida = rng.choice(mides, n)
+    mida = rng.choice(('individu', 'parella', 'grup', 'gran'), n)
 
     nombre = np.empty(n, int)
     nombre[mida == 'individu'] = 1
@@ -106,7 +87,7 @@ def generar_casos(n):
     nombre[mida == 'gran'] = rng.uniform(8, 16, np.sum(mida == 'gran')).astype(int)
 
     # EDAT
-    generacio = rng.choice(generacions, n)
+    generacio = rng.choice(('infant', 'adolescent', 'jove', 'adult', 'vell'), n)
 
     mean = np.empty(n)
     std = np.empty(n)
@@ -156,26 +137,33 @@ def generar_casos(n):
     dies = 1 + rng.binomial(m, p)
 
     # ARTISTES
-    noms = list(domini['artistes'])
-    artistes = np.empty((n, len(noms)), int)
+    artistes = rng.binomial(1, 1/len(noms['artistes']), (n, len(noms['artistes'])))
 
-    i = np.isin(noms, artistes_pop)
-    artistes[:, i] = rng.binomial(1, 1/len(artistes_pop), (n, i.sum()))
-
-    i = ~np.isin(noms, artistes_pop)
-    artistes[:, i] = rng.binomial(1, 1/len(noms), (n, i.sum()))
+    artistes_pop = (
+        "Rembrandt (Rembrandt van Rijn)",
+        "Peter Paul Rubens",
+        "Jean Honore Fragonard",
+        "Goya (Francisco de Goya y Lucientes)",
+        "Eugene Delacroix",
+        "Jean-Francois Millet",
+        "Claude Monet",
+        "Vincent van Gogh",
+        "Edgar Degas"
+    )
+    artistes[:, np.isin(noms['artistes'], artistes_pop)] = \
+        rng.binomial(1, 1/len(artistes_pop), (n, len(artistes_pop)))
 
     artistes = artistes.astype(bool)
 
     # PERIODES
-    noms = list(domini['periodes'])
-    periodes = np.empty((n, len(noms)), int)
+    periodes = rng.binomial(1, 1/len(noms['periodes']), (n, len(noms['periodes'])))
 
-    i = np.isin(noms, periodes_pop)
-    periodes[:, i] = rng.binomial(1, 1/len(periodes_pop), (n, i.sum()))
-
-    i = ~np.isin(noms, periodes_pop)
-    periodes[:, i] = rng.binomial(1, 1/len(noms), (n, i.sum()))
+    periodes_pop = (
+        "Renaissance",
+        "Impressionism"
+    )
+    periodes[:, np.isin(noms['periodes'], periodes_pop)] = \
+        rng.binomial(1, 1/len(periodes_pop), (n, len(periodes_pop)))
 
     periodes = periodes.astype(bool)
 
@@ -187,18 +175,3 @@ def generar_casos(n):
         artistes,
         periodes
     )]
-
-
-# def generar_museu(n, sales):
-#     if isinstance(n, int):
-#         museu = df.sample(n).reset_index()
-#     else:
-#         museu = df.sample(frac=n).reset_index()
-#     museu['Sala'] = rng.permutation(np.arange(museu.shape[0]) % sales + 1)
-#     return museu
-# 
-# def guardar_museu(museu, nom):
-#     museu.to_csv('dades/' + nom, index=False)
-# 
-# def carregar_museu(nom):
-#     return pd.read_csv('dades/' + nom)

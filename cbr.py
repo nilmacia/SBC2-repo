@@ -136,12 +136,12 @@ class CBR:
         if any(artista in domini['artistes'] for artista in case.artistes):
             obres_pref = []
             for _, obra in obres.iterrows(): 
-                if obra['Artist'] in case.artistes: 
+                if obra['Artista'] in case.artistes: 
                     obres_pref.append(obra)
-                    tempo += obra['Time']
+                    tempo += obra['Temps']
             while tempo > 0:
                 obra_treure = cas_recomanat.pop()
-                tempo -= obra_treure['Time']
+                tempo -= obra_treure['Temps']
             for obra in obres_pref:
                 cas_recomanat.append(obra)
 
@@ -149,17 +149,17 @@ class CBR:
         if any(periode in domini['periodes'] for periode in case.periodes):
             obres_pref2 = []
             for _, obra in obres.iterrows(): 
-                if obra['Period'] in case.periodes: 
+                if obra['Periode'] in case.periodes: 
                     obres_pref2.append(obra)
-                    tempo2 += obra['Time']
+                    tempo2 += obra['Temps']
             
         while tempo2 > 0 and cas_recomanat: 
             obra_treure = cas_recomanat[-1] 
-            if obra_treure['Artist'] in case.artistes:
+            if obra_treure['Artista'] in case.artistes:
                 cas_recomanat = cas_recomanat[:-1] + [obra_treure]
                 continue
             cas_recomanat.pop()  
-            tempo2 -= obra_treure['Time']
+            tempo2 -= obra_treure['Temps']
             for obra in obres_pref2:
                 cas_recomanat.append(obra)
 
