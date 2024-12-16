@@ -85,8 +85,8 @@ class CBR:
         min_dist, max_dist = 0, max([dist for _, _, dist in casospropers])
         #Valoracio entenc que està entre -1 i 1
 
-        a = 0.6  # Pes de la valoració
-        b = 0.4  # Pes de la distància (per exemple)
+        a = 0.6  #VAL
+        b = 0.4  #DIST (x exemple)
 
         pesos_casos = []
         for valoracio, dist in casospropers:
