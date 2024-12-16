@@ -50,8 +50,7 @@ def valorar(cas):
 
     # temps
     temps_obres = df.Time * cas.obres
-    temps_obres[df.Artist.isin(noms_artistes)] *= 1.1
-    temps_obres[df.Period.isin(noms_periodes)] *= 1.1
+    temps_obres[df.Artist.isin(noms_artistes) | df.Period.isin(noms_periodes)] *= 1.1
     temps_obres = temps_obres.sum()
     temps_obres *= coef(cas.edat, 5, 95, 0.2)
 
