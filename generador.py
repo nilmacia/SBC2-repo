@@ -78,19 +78,18 @@ def valorar(cas):
     valoracio_temps = bell(diff, 0, 1)
 
     # preferencies
-    eps = np.finfo(float).eps
-    match_artistes = df.Artist.isin(noms_artistes)
-    dist_artistes = [domini['periodes'][domini['artistes'][a]] for a in df[cas.obres].Artist]
-    match_artistes = [(np.isin(df.Artist[c.obres], c.get_artistes()).sum() + eps) / c.obres.sum()
-                      for c in casos]
-    dist_artistes = 
+    obres = df[cas.obres]
+    preferencies = set(domini['periodes'][p] for p in noms_periodes)
+    periode_artistes = set(domini['artistes'][a] for a in noms_artistes)
+    preferencies.union(domini['periodes'][p] for p in periode_artistes)
+    preferencies = np.array(list(preferencies))
+    recomanacio = np.array(domini['periodes'][p] for p in obres.Period)
+    dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
+    dist[obres.Artist.isin(noms_artistes)] -= 1
 
-    valoracio_preferencies = ...
+    valoracio_preferencies = bell(dist.mean(), -1, 7)
 
-    valoracio = valoracio_temps * valoracio_preferencies
-
-    for c, v in zip(casos, valoracio):
-        c.valoracio = v
+    cas.valoracio = valoracio_temps * valoracio_preferencies
 
 
 def recomanar_random(casos):
