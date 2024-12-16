@@ -8,7 +8,7 @@ with open("dades/domini.json") as f:
     domini = json.load(f)
 
 class CBR:
-    def __init__(self, arbre, artist_weight=1.0, period_weight=1.0, age_weight=1.0, hours_weight=1.0):
+    def __init__(self, arbre, artist_weight=1., period_weight=1., age_weight=1., time_weight=1.):
         """
         Inicialitza el sistema amb l'arrel i els pesos per artistes, periodes, edat i hores.
         """
@@ -16,7 +16,7 @@ class CBR:
         self.artist_weight = artist_weight
         self.period_weight = period_weight
         self.age_weight = age_weight
-        self.hours_weight = hours_weight
+        self.time_weight = time_weight
 
     def calculate_distance(self, case, leaf_case):
         """
@@ -48,8 +48,8 @@ class CBR:
             artist_distance * self.artist_weight +
             period_distance * self.period_weight +
             age_distance * self.age_weight +
-            hours_distance * self.hours_weight
-        ) / (self.artist_weight + self.period_weight + self.age_weight + self.hours_weight)
+            hours_distance * self.time_weight
+        ) / (self.artist_weight + self.period_weight + self.age_weight + self.time_weight)
 
         # Suma ponderada de les distàncies
         total_distance = numeric_distance + combined_distance
