@@ -30,7 +30,6 @@ periodes_pop = (
 
 df = pd.read_csv('dades/obres.csv')
 
-t_obra = 5
 t_trasllat = 2
 n_sales = 10
 
@@ -91,7 +90,7 @@ def valorar(cas):
 def recomanar_random(casos):
     t = np.array([c.temps for c in casos])
     t -= t_trasllat * n_sales
-    n_obres_aprox = t / t_obra
+    n_obres_aprox = t / df.Time.mean()
     p = n_obres_aprox / df.shape[0]
     recomanacio = rng.binomial(1, p, (len(casos), df.shape[0])).astype(bool)
 
@@ -136,7 +135,7 @@ def generar_casos(n):
     hores = np.log(edat)
     hores = (hores - np.log(5)) * (7 - 1) / (np.log(95) - np.log(5)) + 1
     hores += rng.binomial(3, 0.15, n)
-    temps = (hores * 60).round().astype(int)
+    t_dia = (hores * 60).round().astype(int)
 
     # DIES
     m = np.empty(n, int)
@@ -186,7 +185,7 @@ def generar_casos(n):
     return [Cas(*feats) for feats in zip(
         nombre,
         edat,
-        temps,
+        t_dia,
         dies,
         artistes,
         periodes
