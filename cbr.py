@@ -191,8 +191,8 @@ class CBR:
         print("\n=== Retain ===")
         valorar(solution)
         valoracio = solution.valoracio
-        if valoracio > 0.6 and valoracio < 0.4:
-            self.root.feed(case)
+        #if valoracio > 0.6 and valoracio < 0.4:
+        self.root.feed(case)
 
 
     def crb(self, case):
