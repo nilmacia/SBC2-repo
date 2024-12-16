@@ -82,12 +82,16 @@ def valorar(cas):
     preferencies = set(domini['periodes'][p] for p in noms_periodes)
     periode_artistes = set(domini['artistes'][a] for a in noms_artistes)
     preferencies.union(domini['periodes'][p] for p in periode_artistes)
-    preferencies = np.array(list(preferencies))
-    recomanacio = np.array([domini['periodes'][p] for p in obres.Period])
-    dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
-    dist[obres.Artist.isin(noms_artistes)] -= 1
+    if preferencies:
+        preferencies = np.array(list(preferencies))
+        recomanacio = np.array([domini['periodes'][p] for p in obres.Period])
+        dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
+        dist[obres.Artist.isin(noms_artistes)] -= 1
+        dist = dist.mean()
+    else:
+        dist = 0
 
-    valoracio_preferencies = bell(dist.mean(), -1, 7)
+    valoracio_preferencies = bell(dist, -1, 7)
 
     cas.valoracio = valoracio_temps * valoracio_preferencies
 
@@ -140,7 +144,7 @@ def generar_casos(n):
     hores = np.log(edat)
     hores = (hores - np.log(5)) * (7 - 1) / (np.log(95) - np.log(5)) + 1
     hores += rng.binomial(3, 0.15, n)
-    hores = (hores * 60).round().astype(int)
+    temps = (hores * 60).round().astype(int)
 
     # DIES
     m = np.empty(n, int)
@@ -208,7 +212,7 @@ def generar_casos(n):
     return [Cas(*feats) for feats in zip(
         nombre,
         edat,
-        hores,
+        temps,
         dies,
         tipus,
         artistes,

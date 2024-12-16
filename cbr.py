@@ -2,7 +2,7 @@ import numpy as np
 from base_casos import Node
 import json
 
-import numpy as np
+path_domini = "dades/domini.json"
 
 class CBR:
     def __init__(self, root, artist_weight=1.0, period_weight=1.0, age_weight=1.0, hours_weight=1.0):
@@ -82,54 +82,90 @@ class CBR:
             # Retornar els 5 millors casos
             return top_cases
 
-    def reuse(self, closest_case, case):
+    def reuse(self, casospropers, case):
         """
         Adapta la informació del cas recuperat per crear una solució inicial pel nou cas.
         """
         print("\n=== Reuse ===")
-        if closest_case is None:
-            solution = case 
+        cas_recomanat =  []
+
+        min_dist, max_dist = 0, max([dist for _, _, dist in casospropers])
+        #Valoracio entenc que està entre -1 i 1
+
+        a = 0.6  #VAL
+        b = 0.4  #DIST (x exemple)
+
+        pesos_casos = []
+        for valoracio, dist in casospropers:
+            dist_norm = 1 - (max_dist - dist) / (max_dist - min_dist)
+            
+            pes_cas = a* valoracio + b*dist_norm
+            pesos_casos.append(pes_cas)
+
+        puntuacio_obres = []
+        for case, pes_cas in pesos_casos:
+            for obra in case.obres:
+                if obra not in cas_recomanat:
+                    if obra not in puntuacio_obres:
+                        puntuacio_obres[obra] = {"pos": 0, "neg": 0}
+                    if pes_cas > 0:
+                        puntuacio_obres[obra]["pos"] += pes_cas
+                    else:
+                        puntuacio_obres[obra]["neg"] += abs(pes_cas)
+
+        probs_obres = []
+        for obra,scores in puntuacio_obres.items():
+            pesf = scores["pos"] - scores["neg"]
+            probs_obres.append((obra, pesf))
+
+
+
+
+
+
+
+
+        #MODIFICA OBRES SEGONS PREFERENCIA(DE MOMENT SIMPLE)
+        obres_cas_proper = set(closest_case.obres)
+        artistes_a_eliminar = set(closest_case.artistes) - set(case.artistes)
+        artistes_a_afegir = set(case.artistes) - set(closest_case.artistes)
+        periodes_a_eliminar = set(closest_case.periodes) - set(case.periodes)
+        periodes_a_afegir = set(case.periodes) - set(closest_case.periodes)
+
+        obres_a_eliminar = [
+            obra for obra in obres_cas_proper
+            if any(artista in artistes_a_eliminar for artista in closest_case.artistes) or
+            any(periode in periodes_a_eliminar for periode in closest_case.periodes)
+        ]
+        obres_adaptades = obres_cas_proper - set(obres_a_eliminar)
+        with open("dades/domini.json") as f:
+            domini = json.load(f)
+        obres_a_afegir = [
+            obra for obra in domini["obres"]
+            if any(artista in artistes_a_afegir for artista in case.artistes) or
+            any(periode in periodes_a_afegir for periode in case.periodes)
+        ]
+        recom_adaptada = obres_adaptades.union(obres_a_afegir)
+
+        diff_hores = closest_case.hores - case.hores
+        if diff_hores > 0:
+            temps = case.hores
+            while closest_case.hores >= temps:
+                with open(path_domini) as f:
+                    domini = json.load(f)
+                obra = domini[np.random.randint(0, len(domini))] #segurament malament
+                temps_obra = self.get_duration(obra)
+                recom_adaptada.append(obra)
+
+        elif diff_hores < 0:
+            temps = case.hores
+            while closest_case.hores <= temps:
+                obra = recom_adaptada[np.random.randint(0, len(recom_adaptada))]
+                temps_obra = self.get_duration(obra)
+                recom_adaptada.remove(obra)
+                temps -= temps_obra
         else:
-            #MODIFICA OBRES SEGONS PREFERENCIA(DE MOMENT SIMPLE)
-            obres_cas_proper = set(closest_case.obres)
-            artistes_a_eliminar = set(closest_case.artistes) - set(case.artistes)
-            artistes_a_afegir = set(case.artistes) - set(closest_case.artistes)
-            periodes_a_eliminar = set(closest_case.periodes) - set(case.periodes)
-            periodes_a_afegir = set(case.periodes) - set(closest_case.periodes)
-
-            obres_a_eliminar = [
-                obra for obra in obres_cas_proper
-                if any(artista in artistes_a_eliminar for artista in closest_case.artistes) or
-                any(periode in periodes_a_eliminar for periode in closest_case.periodes)
-            ]
-            obres_adaptades = obres_cas_proper - set(obres_a_eliminar)
-            with open("dades/domini.json") as f:
-                domini = json.load(f)
-            obres_a_afegir = [
-                obra for obra in domini["obres"]
-                if any(artista in artistes_a_afegir for artista in case.artistes) or
-                any(periode in periodes_a_afegir for periode in case.periodes)
-            ]
-            recom_adaptada = obres_adaptades.union(obres_a_afegir)
-
-            diff_hores = closest_case.hores - case.hores
-            if diff_hores > 0:
-                temps = case.hores
-                while closest_case.hores >= temps:
-                    #recom_adaptada.append(obradeldomini)
-                    pass
-
-                #
-            elif diff_hores < 0:
-                temps = case.hores
-                while closest_case.hores <= temps:
-                    obra = recom_adaptada[np.random.randint(0, len(recom_adaptada))]
-                    temps_obra = self.get_duration(obra)
-                    recom_adaptada.remove(obra)
-                    temps -= temps_obra
-                pass
-            else:
-                pass
+            pass
 
             #Saber preferencies del nou cas
 
