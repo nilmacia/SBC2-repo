@@ -124,19 +124,44 @@ class CBR:
         if min_pes < 0:
             probs_obres_norm = [(obra, pes - min_pes) for obra, pes in probs_obres]
 
-        while len(cas_recomanat) < case.minuts:
+
+        while cas_recomanat.temps < case.temps:
             obra_seleccionada = random.choices([obra for obra, _ in probs_obres_norm], weights=[pes for _, pes in probs_obres_norm], k=1)[0]
         cas_recomanat.append(obra_seleccionada)
 
         obres = pd.read_csv("dades/obres.csv")
         with open(path_domini) as f:
             domini = json.load(f)
+        tempo = 0
         if any(artista in domini['artistes'] for artista in case.artistes):
+            obres_pref = []
             for _, obra in obres.iterrows(): 
                 if obra['Artist'] in case.artistes: 
-                    cas_recomanat.append(obra['Title']) 
+                    obres_pref.append(obra)
+                    tempo += obra['Time']
+            while tempo > 0:
+                obra_treure = cas_recomanat.pop()
+                tempo -= obra_treure['Time']
+            for obra in obres_pref:
+                cas_recomanat.append(obra)
 
-    
+        tempo2 = 0
+        if any(periode in domini['periodes'] for periode in case.periodes):
+            obres_pref2 = []
+            for _, obra in obres.iterrows(): 
+                if obra['Period'] in case.periodes: 
+                    obres_pref2.append(obra)
+                    tempo2 += obra['Time']
+            
+        while tempo2 > 0 and cas_recomanat: 
+            obra_treure = cas_recomanat[-1] 
+            if obra_treure['Artist'] in case.artistes:
+                cas_recomanat = cas_recomanat[:-1] + [obra_treure]
+                continue
+            cas_recomanat.pop()  
+            tempo2 -= obra_treure['Time']
+            for obra in obres_pref2:
+                cas_recomanat.append(obra)
 
         
 
