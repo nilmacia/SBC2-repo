@@ -1,7 +1,7 @@
 from generador import *
 from cas import *
 from cbr import *
-from arbre import *
+from arbre import Arbre
 
 casos_inicials = generar_casos(1000)
 recomanar_random(casos_inicials)

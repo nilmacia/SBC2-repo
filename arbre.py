@@ -1,6 +1,3 @@
-import numpy as np
-from itertools import permutations
-
 layer_th = [
     [2, 4, 8],        # nombre
     [10, 20, 40, 70], # edat

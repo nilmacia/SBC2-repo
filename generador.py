@@ -21,8 +21,8 @@ def valorar(cas):
         x = bell(x, a, b)
         return rescale(x, 0, 1, 1-c, 1+c)
 
-    noms_artistes = np.array(list(domini['artistes']))[cas.artistes]
-    noms_periodes = np.array(list(domini['periodes']))[cas.periodes]
+    noms_artistes = noms['artistes'][cas.artistes]
+    noms_periodes = noms['periodes'][cas.periodes]
 
     # temps
     temps_obres = df.Temps.astype(float) * cas.obres

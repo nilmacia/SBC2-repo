@@ -4,7 +4,8 @@ import json
 import random
 import pandas as pd
 
-path_domini = "dades/domini.json"
+with open("dades/domini.json") as f:
+    domini = json.load(f)
 
 class CBR:
     def __init__(self, arbre, artist_weight=1.0, period_weight=1.0, age_weight=1.0, hours_weight=1.0):
@@ -130,8 +131,6 @@ class CBR:
         cas_recomanat.append(obra_seleccionada)
 
         obres = pd.read_csv("dades/obres.csv")
-        with open(path_domini) as f:
-            domini = json.load(f)
         tempo = 0
         if any(artista in domini['artistes'] for artista in case.artistes):
             obres_pref = []
