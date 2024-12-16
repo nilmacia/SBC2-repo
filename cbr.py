@@ -2,6 +2,7 @@ import numpy as np
 from base_casos import Node
 import json
 import random
+import pandas as pd
 
 path_domini = "dades/domini.json"
 
@@ -123,51 +124,26 @@ class CBR:
         if min_pes < 0:
             probs_obres_norm = [(obra, pes - min_pes) for obra, pes in probs_obres]
 
-        while len(cas_recomanat) < 10:
+        while len(cas_recomanat) < case.minuts:
             obra_seleccionada = random.choices([obra for obra, _ in probs_obres_norm], weights=[pes for _, pes in probs_obres_norm], k=1)[0]
         cas_recomanat.append(obra_seleccionada)
 
+        obres = pd.read_csv("dades/obres.csv")
+        with open(path_domini) as f:
+            domini = json.load(f)
+        if any(artista in domini['artistes'] for artista in case.artistes):
+            for _, obra in obres.iterrows(): 
+                if obra['Artist'] in case.artistes: 
+                    cas_recomanat.append(obra['Title']) 
 
-        if case.artistes in domini['artistes']:
-            for artista in
-            obres = [obra for obra in domini["obres"]
-            if any(artista in artistes_a_afegir for artista in case.artistes) or
     
-        ]
+
         
 
 
-        #MODIFICA OBRES SEGONS PREFERENCIA(DE MOMENT SIMPLE)
-        obres_cas_proper = set(closest_case.obres)
-        artistes_a_eliminar = set(closest_case.artistes) - set(case.artistes)
-        artistes_a_afegir = set(case.artistes) - set(closest_case.artistes)
-        periodes_a_eliminar = set(closest_case.periodes) - set(case.periodes)
-        periodes_a_afegir = set(case.periodes) - set(closest_case.periodes)
 
-        obres_a_eliminar = [
-            obra for obra in obres_cas_proper
-            if any(artista in artistes_a_eliminar for artista in closest_case.artistes) or
-            any(periode in periodes_a_eliminar for periode in closest_case.periodes)
-        ]
-        obres_adaptades = obres_cas_proper - set(obres_a_eliminar)
-        with open("dades/domini.json") as f:
-            domini = json.load(f)
-        obres_a_afegir = [
-            obra for obra in domini["obres"]
-            if any(artista in artistes_a_afegir for artista in case.artistes) or
-            any(periode in periodes_a_afegir for periode in case.periodes)
-        ]
-        recom_adaptada = obres_adaptades.union(obres_a_afegir)
-
- 
-
-            #Saber preferencies del nou cas
-
-            #ADAPTAR DIFERENCIES
-            #SI SON + GENT, + HORES O DIFERENT EDAT -> CANVIAR TEMPS/ ADAPTAR OBRES VISTES
-            #PREFERENCIES DIFERENTS -> AFEGIR OBRES PREFERENCIA , ELIMINAR OBRES NO PREFERENCIA???
-        print(f"  -> Solució inicial: {solution}")
-        return recom_adaptada
+        print(f" Cas recomanat: {cas_recomanat}")
+        return cas_recomanat
 
     def revise(self, solution):
         """
