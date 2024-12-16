@@ -24,4 +24,5 @@ class Arbre:
         else:
             casos = self.casos.copy()
             self.casos.add(cas)
+            # IMPLEMENTAR SELECCIÓ DE CASOS
             return casos

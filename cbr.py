@@ -1,5 +1,5 @@
 import numpy as np
-from base_casos import Node
+from arbre import Node
 import json
 import random
 import pandas as pd
