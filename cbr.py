@@ -73,11 +73,11 @@ class CBR:
             top_cases = distances[:5]
 
             # Mostrar resultats
-            print("  -> Els 5 millors casos recuperats:")
+            print(f"  -> Els {len(top_cases)} millors casos recuperats:")
             for i, (retrieved_case, dist) in enumerate(top_cases, 1):
                 print(f"     {i}. Cas: {retrieved_case}, Distància: {dist:.4f}")
 
-            # Retornar els 5 millors casos
+            # Retornar els millors casos
             return top_cases
 
     def reuse(self, casospropers, case):
