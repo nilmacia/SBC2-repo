@@ -52,10 +52,11 @@ class CBR:
 
     def retrieve(self, case):
         """
-        Busca els 5 casos més propers en el sistema de casos, considerant artistes, periodes, edat i hores.
+        Busca els 5 casos més propers en el sistema de casos, considerant artistes, periodes, edat i
+        hores.
         """
         print("=== Retrieve ===")
-        leaf_cases = self.arbre.feed(case)  # Recuperem tots els casos de la fulla
+        leaf_cases = self.arbre.fetch(case)  # Recuperem tots els casos de la fulla
         if len(leaf_cases) == 0:
             print("  -> No s'ha trobat cap cas similar (nou cas).")
             return None
