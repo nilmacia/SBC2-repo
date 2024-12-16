@@ -144,7 +144,7 @@ def generar_casos(n):
     hores = np.log(edat)
     hores = (hores - np.log(5)) * (7 - 1) / (np.log(95) - np.log(5)) + 1
     hores += rng.binomial(3, 0.15, n)
-    hores = (hores * 60).round().astype(int)
+    temps = (hores * 60).round().astype(int)
 
     # DIES
     m = np.empty(n, int)
@@ -212,7 +212,7 @@ def generar_casos(n):
     return [Cas(*feats) for feats in zip(
         nombre,
         edat,
-        hores,
+        temps,
         dies,
         tipus,
         artistes,
