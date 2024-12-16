@@ -23,8 +23,8 @@ class CBR:
         Calcula la distància entre dos casos, considerant artistes, periodes, edat i hores.
         """
         # Distància conjunta per artistes i periodes (Jaccard combinada)
-        artists1, artists2 = set(leaf_case.artistes), set(case.artistes)
-        periods1, periods2 = set(leaf_case.periodes), set(case.periodes)
+        artists1, artists2 = set(leaf_case.noms_artistes), set(case.noms_artistes)
+        periods1, periods2 = set(leaf_case.noms_periodes), set(case.noms_periodes)
 
         # Jaccard per artistes
         artist_similarity = len(artists1 & artists2) / len(artists1 | artists2) if artists1 | artists2 else 0
