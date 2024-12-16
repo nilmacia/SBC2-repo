@@ -127,10 +127,10 @@ class CBR:
 
         obres = pd.read_csv("dades/obres.csv")
         tempo = 0
-        if any(artista in domini['artistes'] for artista in case.artistes):
+        if any(artista in domini['artistes'] for artista in case.noms_artistes):
             obres_pref = []
             for _, obra in obres.iterrows(): 
-                if obra['Artista'] in case.artistes: 
+                if obra['Artista'] in case.noms_artistes: 
                     obres_pref.append(obra)
                     tempo += obra['Temps']
             while tempo > 0:
@@ -140,16 +140,16 @@ class CBR:
                 cas_recomanat.append(obra)
 
         tempo2 = 0
-        if any(periode in domini['periodes'] for periode in case.periodes):
+        if any(periode in domini['periodes'] for periode in case.noms_periodes):
             obres_pref2 = []
             for _, obra in obres.iterrows(): 
-                if obra['Periode'] in case.periodes: 
+                if obra['Periode'] in case.noms_periodes: 
                     obres_pref2.append(obra)
                     tempo2 += obra['Temps']
             
         while tempo2 > 0 and cas_recomanat: 
             obra_treure = cas_recomanat[-1] 
-            if obra_treure['Artista'] in case.artistes:
+            if obra_treure['Artista'] in case.noms_artistes:
                 cas_recomanat = cas_recomanat[:-1] + [obra_treure]
                 continue
             cas_recomanat.pop()  
