@@ -44,7 +44,7 @@ n_sales = 10
 
 def valorar(cas):
     def bell(x, a, b):
-        return np.exp(-(x - b)**2/(2*(b - a)**2))
+        return np.exp(-(x - b)**2/(2*((b - a)*0.35)**2))
     
     def rescale(x, a, b, c, d):
         return (x-a) * (d-c) / (b-a) +c
@@ -62,7 +62,7 @@ def valorar(cas):
     temps_obres *= coef(df.Complexity, 1, 10, 0.1)
     temps_obres[df.Artist.isin(noms_artistes)] *= 1.1
     temps_obres[df.Period.isin(noms_periodes)] *= 1.1
-    temps_obres = temps_obres.sum(-1)
+    temps_obres = temps_obres.sum()
     temps_obres *= coef(cas.edat, 5, 95, 0.25)
     temps_obres *= coef(cas.tipus, 0, 3, 0.15)
 
@@ -83,7 +83,7 @@ def valorar(cas):
     periode_artistes = set(domini['artistes'][a] for a in noms_artistes)
     preferencies.union(domini['periodes'][p] for p in periode_artistes)
     preferencies = np.array(list(preferencies))
-    recomanacio = np.array(domini['periodes'][p] for p in obres.Period)
+    recomanacio = np.array([domini['periodes'][p] for p in obres.Period])
     dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
     dist[obres.Artist.isin(noms_artistes)] -= 1
 
@@ -136,11 +136,11 @@ def generar_casos(n):
 
     edat = rng.normal(mean, std).clip(5, 95).astype(int)
 
-    # HORES
+    # T_DIA
     hores = np.log(edat)
     hores = (hores - np.log(5)) * (7 - 1) / (np.log(95) - np.log(5)) + 1
     hores += rng.binomial(3, 0.15, n)
-    hores = hores.round().astype(int)
+    hores = (hores * 60).round().astype(int)
 
     # DIES
     m = np.empty(n, int)
