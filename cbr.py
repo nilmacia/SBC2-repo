@@ -2,6 +2,8 @@ import numpy as np
 from base_casos import Node
 import json
 
+path_domini = "dades/domini.json"
+
 class CBR:
     def __init__(self, root, artist_weight=1.0, period_weight=1.0):
         """
@@ -91,10 +93,12 @@ class CBR:
             if diff_hores > 0:
                 temps = case.hores
                 while closest_case.hores >= temps:
-                    #recom_adaptada.append(obradeldomini)
-                    pass
+                    with open(path_domini) as f:
+                        domini = json.load(f)
+                    obra = domini[np.random.randint(0, len(domini))] #segurament malament
+                    temps_obra = self.get_duration(obra)
+                    recom_adaptada.append(obra)
 
-                #
             elif diff_hores < 0:
                 temps = case.hores
                 while closest_case.hores <= temps:
@@ -102,7 +106,6 @@ class CBR:
                     temps_obra = self.get_duration(obra)
                     recom_adaptada.remove(obra)
                     temps -= temps_obra
-                pass
             else:
                 pass
 
