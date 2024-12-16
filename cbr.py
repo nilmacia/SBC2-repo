@@ -1,5 +1,10 @@
 import numpy as np
+<<<<<<< HEAD
+from base_casos import Node
+from generador import valorar
+=======
 from arbre import Node
+>>>>>>> 6a2780b2e95d879d91052def3a0c7105a795cf30
 import json
 import random
 import pandas as pd
@@ -165,8 +170,6 @@ class CBR:
 
         
 
-
-
         print(f" Cas recomanat: {cas_recomanat}")
         return cas_recomanat
 
@@ -186,18 +189,21 @@ class CBR:
         Emmagatzema el nou cas i la seva solució al sistema de casos.
         """
         print("\n=== Retain ===")
-        print(f"  -> Emmagatzemant el cas {case} amb la solució {solution}.")
-        self.root.feed(case)  # El nou cas es guarda al sistema de nodes
+        valorar(solution)
+        valoracio = solution.valoracio
+        if valoracio > 0.6 and valoracio < 0.4:
+            self.root.feed(case)
+
 
     def crb(self, case):
         """
         Implementa tot el cicle CRB per un cas donat.
         """
         # 1. Retrieve
-        closest_case = self.retrieve(case)
+        top_cases = self.retrieve(case)
 
         # 2. Reuse
-        solution = self.reuse(closest_case, case)
+        solution = self.reuse(top_cases, case)
 
         # 3. Revise
         revised_solution = self.revise(solution)
