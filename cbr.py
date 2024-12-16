@@ -124,15 +124,12 @@ class CBR:
             probs_obres_norm = [(obra, pes - min_pes) for obra, pes in probs_obres]
 
         while len(cas_recomanat) < 10:
-            obra_seleccionada = random.choices(
-            [obra for obra, _ in probs_obres_norm],
-            weights=[pes for _, pes in probs_obres_norm],
-            k=1
-        )[0]
+            obra_seleccionada = random.choices([obra for obra, _ in probs_obres_norm], weights=[pes for _, pes in probs_obres_norm], k=1)[0]
         cas_recomanat.append(obra_seleccionada)
 
 
-        if case.artistes:
+        if case.artistes in domini['artistes']:
+            for artista in
             obres = [obra for obra in domini["obres"]
             if any(artista in artistes_a_afegir for artista in case.artistes) or
     
@@ -169,10 +166,8 @@ class CBR:
             #ADAPTAR DIFERENCIES
             #SI SON + GENT, + HORES O DIFERENT EDAT -> CANVIAR TEMPS/ ADAPTAR OBRES VISTES
             #PREFERENCIES DIFERENTS -> AFEGIR OBRES PREFERENCIA , ELIMINAR OBRES NO PREFERENCIA???
-            print(f"  -> Reutilitzant el cas recuperat {closest_case} per adaptar-lo al nou cas.")
-            solution = {"adapted_solution": f"adapted_from_{closest_case}"}
         print(f"  -> Solució inicial: {solution}")
-        return solution
+        return recom_adaptada
 
     def revise(self, solution):
         """
