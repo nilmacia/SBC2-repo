@@ -55,7 +55,7 @@ class CBR:
 
     def retrieve(self, case):
         """
-        Busca el cas més proper en el sistema de casos, considerant artistes, periodes, edat i hores.
+        Busca els 5 casos més propers en el sistema de casos, considerant artistes, periodes, edat i hores.
         """
         print("=== Retrieve ===")
         leaf_cases = self.root.feed(case)  # Recuperem tots els casos de la fulla
@@ -63,14 +63,25 @@ class CBR:
             print("  -> No s'ha trobat cap cas similar (nou cas).")
             return None
         else:
+            # Calcular distàncies per a tots els casos de les fulles
             distances = [
-                self.calculate_distance(case, leaf_case) for leaf_case in leaf_cases
+                (leaf_case, self.calculate_distance(case, leaf_case))
+                for leaf_case in leaf_cases
             ]
-            distances = np.array(distances)
-            closest_case_idx = np.argmin(distances)
-            closest_case = leaf_cases[closest_case_idx]
-            print(f"  -> Cas recuperat: {closest_case} amb distància mínima: {distances[closest_case_idx]}")
-            return closest_case
+
+            # Ordenar els casos per distància (de menor a major)
+            distances.sort(key=lambda x: x[1])
+
+            # Seleccionar els 5 millors casos
+            top_cases = distances[:5]
+
+            # Mostrar resultats
+            print("  -> Els 5 millors casos recuperats:")
+            for i, (retrieved_case, dist) in enumerate(top_cases, 1):
+                print(f"     {i}. Cas: {retrieved_case}, Distància: {dist:.4f}")
+
+            # Retornar els 5 millors casos
+            return top_cases
 
     def reuse(self, casospropers, case):
         """
