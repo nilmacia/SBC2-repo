@@ -1,7 +1,13 @@
 import json
-import numpy as np
+import pandas as pd
 
-path_domini = "dades/domini.json"
+with open("dades/domini.json") as f:
+    __domini = json.load(f)
+noms = {
+    'artistes': pd.Series(list(__domini['artistes'])),
+    'periodes': pd.Series(list(__domini['periodes'])),
+    'obres': pd.read_csv('dades/obres.csv').Title
+}
 
 class Cas:
     def __init__(self, nombre, edat, t_dia, dies, artistes, periodes):
@@ -14,29 +20,18 @@ class Cas:
         self.valoracio = None
         self.obres = None
 
-    def set_obres(self, obres):
-        self.obres = obres
+    @property
+    def classificadors(self):
+        return self.nombre, self.edat, self.temps
     
-    def set_valoracio(self, valoracio):
-        self.valoracio = valoracio
-
-    def array_feats(self) -> np.ndarray:
-        atributs = np.array([self.nombre, self.edat, self.temps, self.dies, self.tipus, self.valoracio])
-
-        with open(path_domini) as f:
-            domini = json.load(f)
-        
-        artistes = np.isin(list(domini["artistes"]), self.artistes).astype(int)
-        periodes = np.isin(list(domini["periodes"]), self.periodes).astype(int)
-        
-        return np.concat([atributs, artistes, periodes])
-
-    def array_obres(self) -> np.ndarray:
-        """
-        Retorna el vector binari per les obres recomanades
-        """
-
-        with open(path_domini) as f:
-            domini = json.load(f)
-        
-        return np.isin(domini["obres"], self.obres).astype(int)
+    @property
+    def noms_artistes(self):
+        return list(noms['artistes'][self.artistes])
+    
+    @property
+    def noms_periodes(self):
+        return list(noms['periodes'][self.periodes])
+    
+    @property
+    def noms_obres(self):
+        return list(noms['obres'][self.obres])

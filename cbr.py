@@ -1,6 +1,10 @@
 import numpy as np
+<<<<<<< HEAD
 from base_casos import Node
 from generador import valorar
+=======
+from arbre import Node
+>>>>>>> 6a2780b2e95d879d91052def3a0c7105a795cf30
 import json
 import random
 import pandas as pd
