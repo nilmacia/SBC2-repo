@@ -1,8 +1,6 @@
 import numpy as np
 from itertools import permutations
 
-d_weights = np.array([1,1,1,1,1,1,1,1,1])
-
 class Node:
     def __init__(self, i=None, thresholds=None, children=None):
         if i is not None:
@@ -31,12 +29,6 @@ layer_thresholds = [
     [14, 65],   
     [2, 4], 
     [1, 2],
-    [1 ,2 ,3]
-    #[1],
-    #[1],
-    #[1],
-    #[1],
-    #[1]
     ]
 
 #Hi han tres funcions que permeten trobar l'ordre òptim de larbre per a que estigui més balancejat i sigui més eficient
@@ -94,13 +86,3 @@ for i, thresholds in reversed(list(enumerate(optimized_thresholds))):
         del node_stack[:len(thresholds) + 1]
 
 root = node_stack[0]
-
-from carregar_casos import load
-casos = load()
-print(root.feed(casos[0]))
-print(root.feed(casos[2]))
-print(root.feed(casos[1]))
-print(root.feed(casos[0]))
-
-from cas import *
-Cas()
