@@ -1,88 +1,27 @@
 import numpy as np
 from itertools import permutations
 
-class Node:
-    def __init__(self, i=None, thresholds=None, children=None):
-        if i is not None:
-            self.i = i
-            self.thresholds = thresholds
-            self.children = children
+__layer_th = [
+    [2, 4, 8],        # nombre
+    [10, 20, 40, 70], # edat
+    [120, 300, 600, 1800],  # temps
+]
+
+class Arbre:
+    def __init__(self, i=0):
+        if i < len(__layer_th):
+            self.children = [Arbre(i+1) for _ in range(len(__layer_th) + 1)]
         else:
-            self.cases = None
+            self.casos = set()
+        self.i = i
 
-    def feed(self, case):
-        if 'i' in dir(self):
-            for th, child in zip(self.thresholds, self.children):
-                if case[self.i] < th:
-                    return child.feed(case)
-            return self.children[-1].feed(case)
+    def feed(self, cas):
+        if self.i < len(__layer_th):
+            for th, child in zip(__layer_th[self.i], self.children):
+                if cas.classificadors[self.i] < th:
+                    return child.feed(cas)
+            return self.children[-1].feed(cas)
         else:
-            if self.cases is None:
-                self.cases = np.stack([case])
-                return self.cases  # Retornem els casos emmagatzemats (només un en aquest punt)
-            else:
-                return self.cases  # Retornem tots els casos emmagatzemats a la fulla
-
-        
-layer_thresholds = [
-    [1, 5], 
-    [14, 65],   
-    [2, 4], 
-    [1, 2],
-    ]
-
-#Hi han tres funcions que permeten trobar l'ordre òptim de larbre per a que estigui més balancejat i sigui més eficient
-
-def evaluate_balance(cases, i, thresholds):
-    """
-    Calcula una mesura de desequilibri per una característica amb un ordre específic de thresholds.
-    """
-    counts = []
-    for th in thresholds:
-        counts.append(np.sum(cases[:, i] < th))
-        cases = cases[cases[:, i] >= th]
-    counts.append(len(cases)) 
-    return np.var(counts) 
-
-
-def find_optim_threshold_order(cases, i, thresholds):
-    """
-    Troba l'ordre de thresholds que minimitza el desequilibri per una característica `i`.
-    """
-    best_order = None
-    min_variance = float('inf')
-
-    for perm in permutations(thresholds):  # Prova totes les permutacions
-        variance = evaluate_balance(cases, i, perm)
-        if variance < min_variance:
-            min_variance = variance
-            best_order = perm
-
-    return list(best_order), min_variance
-
-def optimize_thresholds(cases, layer_thresholds):
-    """
-    Retorna l'ordre òptim dels thresholds per cada característica.
-    """
-    optimized_thresholds = []
-    for i, thresholds in enumerate(layer_thresholds):
-        if len(thresholds) > 1:
-            best_order, _ = find_optim_threshold_order(cases, i, thresholds)
-            optimized_thresholds.append(best_order)
-        else:
-            optimized_thresholds.append(thresholds)  # Si només hi ha un llindar, no hi ha res a optimitzar
-    return optimized_thresholds
-
-
-optimized_thresholds = optimize_thresholds(layer_thresholds)
-
-node_stack = [Node() for _ in range(sum(len(th) + 1 for th in optimized_thresholds))]
-
-for i, thresholds in reversed(list(enumerate(optimized_thresholds))):
-    num_nodes_at_level = len(thresholds) + 1
-    for _ in range(num_nodes_at_level):
-        node = Node(i, thresholds, node_stack[:len(thresholds) + 1])
-        node_stack.append(node)
-        del node_stack[:len(thresholds) + 1]
-
-root = node_stack[0]
+            casos = self.casos.copy()
+            self.casos.add(cas)
+            return casos
