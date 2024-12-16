@@ -49,13 +49,11 @@ def valorar(cas):
     noms_periodes = np.array(list(domini['periodes']))[cas.periodes]
 
     # temps
-    temps_obres = cas.obres * t_obra
-    temps_obres *= coef(df.Relevance, 1, 10, 0.1)
-    temps_obres *= coef(df.Complexity, 1, 10, 0.1)
+    temps_obres = df.Time * cas.obres
     temps_obres[df.Artist.isin(noms_artistes)] *= 1.1
     temps_obres[df.Period.isin(noms_periodes)] *= 1.1
     temps_obres = temps_obres.sum()
-    temps_obres *= coef(cas.edat, 5, 95, 0.25)
+    temps_obres *= coef(cas.edat, 5, 95, 0.2)
 
     temps_trasllats = n_sales * t_trasllat
     temps_trasllats *= coef(np.abs(50 - cas.edat), 0, 45, 0.2)
@@ -82,7 +80,7 @@ def valorar(cas):
     else:
         dist = 0
 
-    valoracio_preferencies = bell(dist, -1, 7)
+    valoracio_preferencies = bell(dist, 7, -1)
 
     cas.valoracio = valoracio_temps * valoracio_preferencies
 
