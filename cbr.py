@@ -96,11 +96,11 @@ class CBR:
             for obra in case.obres:
                 if obra not in cas_recomanat:
                     if obra not in puntuacio_obres:
-                    puntuacio_obres[obra] = {"pos": 0, "neg": 0}
-                if pes_cas > 0:
-                    puntuacio_obres[obra]["pos"] += pes_cas
-                else:
-                    puntuacio_obres[obra]["neg"] += abs(pes_cas)
+                        puntuacio_obres[obra] = {"pos": 0, "neg": 0}
+                    if pes_cas > 0:
+                        puntuacio_obres[obra]["pos"] += pes_cas
+                    else:
+                        puntuacio_obres[obra]["neg"] += abs(pes_cas)
 
         probs_obres = []
         for obra,scores in puntuacio_obres.items():
