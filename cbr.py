@@ -56,7 +56,7 @@ class CBR:
         """
         print("=== Retrieve ===")
         leaf_cases = self.arbre.feed(case)  # Recuperem tots els casos de la fulla
-        if leaf_cases is None or len(leaf_cases) == 0:
+        if len(leaf_cases) == 0:
             print("  -> No s'ha trobat cap cas similar (nou cas).")
             return None
         else:
