@@ -25,12 +25,14 @@ jocs_test = [
 ]
 
 valoracions = []
-for joc in jocs_test:
+for i, joc in enumerate(jocs_test, 1):
     cas = Cas(*joc)
     top_casos = cbr.retrieve(cas)
     cbr.reuse(cas)
     valorar(cas)
     valoracions.append(cas.valoracio)
+    print('Recomanació', i, cas.noms_obres)
 
 print('Resultats:', valoracions)
 print('Avg:', sum(valoracions)/len(valoracions))
+

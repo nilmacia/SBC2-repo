@@ -158,17 +158,6 @@ class CBR:
         print(f" Cas recomanat: {cas_recomanat}")
         return cas_recomanat
 
-    def revise(self, solution):
-        """
-        Revisa la solució proposada. Aquí se simula una revisió manual o automàtica.
-        """
-        print("\n=== Revise ===")
-        # Simulem una revisió manual o automàtica
-        revised_solution = solution.copy()
-        revised_solution["revised"] = True  # Marquem la solució com revisada
-        print(f"  -> Solució revisada: {revised_solution}")
-        return revised_solution
-
     def retain(self, case, solution):
         """
         Emmagatzema el nou cas i la seva solució al sistema de casos.
@@ -182,23 +171,3 @@ class CBR:
         valoracio = solution.valoracio
         if valoracio > 0.6 and valoracio < 0.4:
             self.root.feed(case)
-
-
-    def crb(self, case):
-        """
-        Implementa tot el cicle CRB per un cas donat.
-        """
-        # 1. Retrieve
-        top_cases = self.retrieve(case)
-
-        # 2. Reuse
-        solution = self.reuse(top_cases, case)
-
-        # 3. Revise
-        revised_solution = self.revise(solution)
-
-        # 4. Retain
-        self.retain(case, revised_solution)
-
-        print("\n=== CRB Finalitzat ===")
-        return revised_solution
