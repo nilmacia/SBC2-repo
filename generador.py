@@ -30,8 +30,8 @@ def valorar(cas):
     noms_periodes = np.array(list(domini['periodes']))[cas.periodes]
 
     # temps
-    temps_obres = df.Time * cas.obres
-    temps_obres[df.Artist.isin(noms_artistes) | df.Period.isin(noms_periodes)] *= 1.1
+    temps_obres = df.Temps * cas.obres
+    temps_obres[df.Artista.isin(noms_artistes) | df.Periode.isin(noms_periodes)] *= 1.1
     temps_obres = temps_obres.sum()
     temps_obres *= coef(cas.edat, 5, 95, 0.2)
 
@@ -68,7 +68,7 @@ def valorar(cas):
 def recomanar_random(casos):
     t = np.array([c.temps for c in casos])
     t -= t_trasllat * n_sales
-    n_obres_aprox = t / df.Time.mean()
+    n_obres_aprox = t / df.Temps.mean()
     p = n_obres_aprox / df.shape[0]
     recomanacio = rng.binomial(1, p, (len(casos), df.shape[0])).astype(bool)
 
