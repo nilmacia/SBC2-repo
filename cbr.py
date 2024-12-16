@@ -2,6 +2,8 @@ import numpy as np
 from base_casos import Node
 import json
 
+path_domini = "dades/domini.json"
+
 class CBR:
     def __init__(self, root, artist_weight=1.0, period_weight=1.0, age_weight=1.0, hours_weight=1.0):
         """
