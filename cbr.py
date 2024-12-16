@@ -2,23 +2,29 @@ import numpy as np
 from base_casos import Node
 import json
 
+<<<<<<< HEAD
 path_domini = "dades/domini.json"
+=======
+import numpy as np
+>>>>>>> a7cc218567e945d528e468cc8df349a3f301303d
 
 class CBR:
-    def __init__(self, root, artist_weight=1.0, period_weight=1.0):
+    def __init__(self, root, artist_weight=1.0, period_weight=1.0, age_weight=1.0, hours_weight=1.0):
         """
-        Inicialitza el sistema amb l'arrel i els pesos per artistes i periodes.
+        Inicialitza el sistema amb l'arrel i els pesos per artistes, periodes, edat i hores.
         """
         self.root = root
         self.artist_weight = artist_weight
         self.period_weight = period_weight
+        self.age_weight = age_weight
+        self.hours_weight = hours_weight
 
     def calculate_distance(self, case, leaf_case):
         """
-        Calcula la distància entre dos casos, considerant artistes i periodes.
+        Calcula la distància entre dos casos, considerant artistes, periodes, edat i hores.
         """
         # Distància numèrica ponderada
-        numeric_distance = np.sqrt(np.sum(((leaf_case.to_array() - case.to_array()) ** 2)))
+        numeric_distance = np.sqrt(np.sum((leaf_case.to_array() - case.to_array()) ** 2))
 
         # Distància conjunta per artistes i periodes (Jaccard combinada)
         artists1, artists2 = set(leaf_case.artistes), set(case.artistes)
@@ -32,9 +38,19 @@ class CBR:
         period_similarity = len(periods1 & periods2) / len(periods1 | periods2) if periods1 | periods2 else 0
         period_distance = 1 - period_similarity
 
-        # Combinar artistes i periodes segons els pesos
-        combined_distance = (artist_distance * self.artist_weight + 
-                             period_distance * self.period_weight) / (self.artist_weight + self.period_weight)
+        # Distància per edat (normalitzada)
+        age_distance = abs(leaf_case.edat - case.edat) / max(leaf_case.edat, case.edat)
+
+        # Distància per hores (normalitzada)
+        hours_distance = abs(leaf_case.hores - case.hores) / max(leaf_case.hores, case.hores)
+
+        # Combinar artistes, periodes, edat i hores segons els pesos
+        combined_distance = (
+            artist_distance * self.artist_weight +
+            period_distance * self.period_weight +
+            age_distance * self.age_weight +
+            hours_distance * self.hours_weight
+        ) / (self.artist_weight + self.period_weight + self.age_weight + self.hours_weight)
 
         # Suma ponderada de les distàncies
         total_distance = numeric_distance + combined_distance
@@ -42,7 +58,7 @@ class CBR:
 
     def retrieve(self, case):
         """
-        Busca el cas més proper en el sistema de casos, considerant artistes i periodes.
+        Busca el cas més proper en el sistema de casos, considerant artistes, periodes, edat i hores.
         """
         print("=== Retrieve ===")
         leaf_cases = self.root.feed(case)  # Recuperem tots els casos de la fulla

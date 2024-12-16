@@ -9,10 +9,10 @@ mides = ('individu', 'parella', 'grup', 'gran')
 generacions = ('infant', 'adolescent', 'jove', 'adult', 'vell')
 
 tipus_visitant = (
-    0, # formiga
-    1, # saltamartí
-    2, # papallona
-    3  # peix
+    0, # peix
+    1, # papallona
+    2, # saltamartí
+    3  # formiga
 )
 
 with open('dades/domini.json') as f:
@@ -42,34 +42,58 @@ t_trasllat = 2
 n_sales = 10
 
 
-def coef(a, b, x):
-    x -= a + 5
-    x *= 5/(b - a - 5)
-    return 1/(1 + np.exp(-x))
-
-def valorar(casos):    
-    # temps
-    temps_previst = np.array([c.temps for c in casos])
-
-    temps_visita = np.array([c.obres for c in casos]) * t_obra
-    temps_visita *= coefs(0, 9)[df.Relevance]
-    temps_visita *= coefs(10)[df.Complexity]
-    temps_visita *= coefs(15)[[15 - c.nombre for c in casos]]
-    temps_visita *= coefs(46)[[np.abs(50 - c.edat) for c in casos]]
-    temps_visita *= coefs(4)[[3 - c.tipus for c in casos]]
-
-    temps_visita = temps_visita.sum(-1)
-    temps_visita *= rng.normal(1, 0.2, temps_visita.shape).clip(0.4, 1.6)
+def valorar(cas):
+    def bell(x, a, b):
+        return np.exp(-(x - b)**2/(2*((b - a)*0.35)**2))
     
-    valoracio_temps = 
+    def rescale(x, a, b, c, d):
+        return (x-a) * (d-c) / (b-a) +c
+
+    def coef(x, a, b, c):
+        x = bell(x, a, b)
+        return rescale(x, 0, 1, 1-c, 1+c)
+
+    noms_artistes = np.array(list(domini['artistes']))[cas.artistes]
+    noms_periodes = np.array(list(domini['periodes']))[cas.periodes]
+
+    # temps
+    temps_obres = cas.obres * t_obra
+    temps_obres *= coef(df.Relevance, 1, 10, 0.1)
+    temps_obres *= coef(df.Complexity, 1, 10, 0.1)
+    temps_obres[df.Artist.isin(noms_artistes)] *= 1.1
+    temps_obres[df.Period.isin(noms_periodes)] *= 1.1
+    temps_obres = temps_obres.sum()
+    temps_obres *= coef(cas.edat, 5, 95, 0.25)
+    temps_obres *= coef(cas.tipus, 0, 3, 0.15)
+
+    temps_trasllats = n_sales * t_trasllat
+    temps_trasllats *= coef(np.abs(50 - cas.edat), 0, 45, 0.2)
+
+    temps_visita = temps_obres + temps_trasllats
+    temps_visita *= coef(cas.nombre, 1, 15, 0.2)
+    temps_visita *= rng.normal(1, 0.1, temps_visita.shape).clip(0.7, 1.3)
+    
+    diff = temps_visita/cas.temps
+    diff = np.minimum(diff, 1/diff)
+    valoracio_temps = bell(diff, 0, 1)
 
     # preferencies
-    # estil
+    obres = df[cas.obres]
+    preferencies = set(domini['periodes'][p] for p in noms_periodes)
+    periode_artistes = set(domini['artistes'][a] for a in noms_artistes)
+    preferencies.union(domini['periodes'][p] for p in periode_artistes)
+    if preferencies:
+        preferencies = np.array(list(preferencies))
+        recomanacio = np.array([domini['periodes'][p] for p in obres.Period])
+        dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
+        dist[obres.Artist.isin(noms_artistes)] -= 1
+        dist = dist.mean()
+    else:
+        dist = 0
 
-    valoracio = ...
+    valoracio_preferencies = bell(dist, -1, 7)
 
-    for c, v in zip(casos, valoracio):
-        c.valoracio = v
+    cas.valoracio = valoracio_temps * valoracio_preferencies
 
 
 def recomanar_random(casos):
@@ -77,7 +101,7 @@ def recomanar_random(casos):
     t -= t_trasllat * n_sales
     n_obres_aprox = t / t_obra
     p = n_obres_aprox / df.shape[0]
-    recomanacio = rng.binomial(1, p, (len(casos), df.shape[0]))
+    recomanacio = rng.binomial(1, p, (len(casos), df.shape[0])).astype(bool)
 
     for c, r in zip(casos, recomanacio):
         c.obres = r
@@ -116,12 +140,11 @@ def generar_casos(n):
 
     edat = rng.normal(mean, std).clip(5, 95).astype(int)
 
-    # HORES
+    # T_DIA
     hores = np.log(edat)
-    hores = hores - np.log(5) + 1
-    hores *= 7/np.log(95)
+    hores = (hores - np.log(5)) * (7 - 1) / (np.log(95) - np.log(5)) + 1
     hores += rng.binomial(3, 0.15, n)
-    hores = hores.round().astype(int)
+    hores = (hores * 60).round().astype(int)
 
     # DIES
     m = np.empty(n, int)
@@ -148,19 +171,19 @@ def generar_casos(n):
     tipus = np.empty(n, int)
 
     i = generacio == 'infant'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.2, 0.4, 0.3))
-
-    i = generacio == 'adolescent'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.2, 0.3, 0.4))
-
-    i = generacio == 'jove'
-    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.2, 0.4, 0.3, 0.1))
-
-    i = generacio == 'adult'
     tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.3, 0.4, 0.2, 0.1))
 
-    i = generacio == 'vell'
+    i = generacio == 'adolescent'
     tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.4, 0.3, 0.2, 0.1))
+
+    i = generacio == 'jove'
+    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.3, 0.4, 0.2))
+
+    i = generacio == 'adult'
+    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.2, 0.4, 0.3))
+
+    i = generacio == 'vell'
+    tipus[i] = rng.choice(tipus_visitant, tipus[i].shape, p=(0.1, 0.2, 0.3, 0.4))
 
     # ARTISTES
     noms = list(domini['artistes'])
@@ -172,6 +195,8 @@ def generar_casos(n):
     i = ~np.isin(noms, artistes_pop)
     artistes[:, i] = rng.binomial(1, 1/len(noms), (n, i.sum()))
 
+    artistes = artistes.astype(bool)
+
     # PERIODES
     noms = list(domini['periodes'])
     periodes = np.empty((n, len(noms)), int)
@@ -182,6 +207,7 @@ def generar_casos(n):
     i = ~np.isin(noms, periodes_pop)
     periodes[:, i] = rng.binomial(1, 1/len(noms), (n, i.sum()))
 
+    periodes = periodes.astype(bool)
 
     return [Cas(*feats) for feats in zip(
         nombre,
