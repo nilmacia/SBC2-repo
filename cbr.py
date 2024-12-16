@@ -87,17 +87,17 @@ class CBR:
         print("\n=== Reuse ===")
         cas_recomanat =  []
 
-        min_dist, max_dist = 0, max([dist for _, _, dist in casospropers])
+        min_dist, max_dist = 0, max([dist for _, dist in casospropers])
         #Valoracio entenc que està entre -1 i 1
 
         a = 0.6  #VAL
         b = 0.4  #DIST (x exemple)
 
         pesos_casos = []
-        for valoracio, dist in casospropers:
+        for c, dist in casospropers:
             dist_norm = 1 - (max_dist - dist) / (max_dist - min_dist)
             
-            pes_cas = a* valoracio + b*dist_norm
+            pes_cas = a* c.valoracio + b*dist_norm
             pesos_casos.append(pes_cas)
 
         puntuacio_obres = []
