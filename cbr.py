@@ -94,7 +94,7 @@ class CBR:
         a = 0.6  #VAL
         b = 0.4  #DIST (x exemple)
 
-        puntuacio_obres = []
+        puntuacio_obres = {}
         for c, dist in casospropers:
             dist_norm = 1 - (max_dist - dist) / (max_dist - min_dist)
             
