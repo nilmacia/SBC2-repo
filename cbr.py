@@ -113,17 +113,17 @@ class CBR:
             punt_obres += puntuacions
 
         # Softmax
-        probs_obres = np.exp(punt_obres)
-        probs_obres /= punt_obres.max()
+        probs_obres = np.exp(punt_obres - punt_obres.max())
+        probs_obres /= probs_obres.max()
 
         if not quiet:
             print(probs_obres)
 
-        probs_obres[recomanacio] = 0
+        probs_obres[recomanacio] = 0.
         while temps_acumulat < case.temps:
-            o = random.choices(range(obres.shape[0]), probs_obres)
+            o = random.choices(range(obres.shape[0]), probs_obres)[0]
             recomanacio[o] = True
-            probs_obres[o] = 0
+            probs_obres[o] = 0.
             temps_acumulat += obres.iloc[o].Temps
 
         case.obres = recomanacio
@@ -141,7 +141,6 @@ class CBR:
         #extreure valoracions
         tots_casos = self.arbre.recorre_fulles()
         v25, v75 = np.percentile([cas.valoracio for cas in tots_casos], [25, 75])
-        print(v25, v75)
         if cas.valoracio < v25 or cas.valoracio > v75:
             self.arbre.feed(cas)
 
