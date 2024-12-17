@@ -6,6 +6,7 @@ import pandas as pd
 
 with open("dades/domini.json") as f:
     domini = json.load(f)
+obres = pd.read_csv('dades/obres.csv')
 
 class CBR:
     def __init__(self, arbre, artist_weight=1., period_weight=1., age_weight=1., time_weight=1.):
@@ -50,15 +51,17 @@ class CBR:
 
         return combined_distance
 
-    def retrieve(self, case):
+    def retrieve(self, case, quiet=False):
         """
         Busca els 5 casos més propers en el sistema de casos, considerant artistes, periodes, edat i
         hores.
         """
-        print("=== Retrieve ===")
+        if not quiet:
+            print("=== Retrieve ===")
         leaf_cases = self.arbre.fetch(case)  # Recuperem tots els casos de la fulla
         if len(leaf_cases) == 0:
-            print("  -> No s'ha trobat cap cas similar (nou cas).")
+            if not quiet:
+                print("  -> No s'ha trobat cap cas similar (nou cas).")
             return None
         else:
             # Calcular distàncies per a tots els casos de les fulles
@@ -74,132 +77,91 @@ class CBR:
             top_cases = distances[:5]
 
             # Mostrar resultats
-            print(f"  -> Els {len(top_cases)} millors casos recuperats:")
-            for i, (retrieved_case, dist) in enumerate(top_cases, 1):
-                print(f"     {i}. Cas: {retrieved_case}, Distància: {dist:.4f}")
+            if not quiet:
+                print(f"  -> Els {len(top_cases)} millors casos recuperats:")
+                for i, (retrieved_case, dist) in enumerate(top_cases, 1):
+                    print(f"     {i}. Cas: {retrieved_case}, Distància: {dist:.4f}")
 
             # Retornar els millors casos
             return top_cases
 
-    def reuse(self, casospropers, case):
+    def reuse(self, casospropers, case, quiet=False):
         """
         Adapta la informació del cas recuperat per crear una solució inicial pel nou cas.
         """
-        print("\n=== Reuse ===")
-        cas_recomanat =  []
-        temps_acumulat = 0
+        # ALERTA: Les distàncies ja estan normalitzades a la funció de distància, no cal tornar-les
+        # normalitzar, i recordem que la valoració va de 0 a 1 ara mateix
+        if not quiet:
+            print("\n=== Reuse ===")
 
-        min_dist, max_dist = 0, max([dist for _, dist in casospropers])
-        #Valoracio entenc que està entre -1 i 1
+        # Prioritzar preferències
+        recomanacio = obres.Artista.isin(case.noms_artistes)
+        recomanacio |= obres.Periode.isin(case.noms_periodes)
+        recomanacio = recomanacio.to_numpy()
 
-        a = 0.6  #VAL
-        b = 0.4  #DIST (x exemple)
+        temps_acumulat = obres[recomanacio].Temps.sum()
 
-        puntuacio_obres = {}
-        for c, dist in casospropers:
-            dist_norm = 1 - (max_dist - dist) / (max_dist - min_dist)
-            
-            pes_cas = a* c.valoracio + b*dist_norm
-            print(c.obres)
-            for obra in c.obres:
-                if obra not in puntuacio_obres:
-                    puntuacio_obres[obra] = {"pos": 0, "neg": 0}
-                if pes_cas > 0:
-                    puntuacio_obres[obra]["pos"] += pes_cas
-                else:
-                    puntuacio_obres[obra]["neg"] += abs(pes_cas)
-  
-        #Mapejar el false o treu al titol de l'obra
+        # Agafar obres dels casos propers
+        punt_obres = np.zeros(obres.shape[0])
+        for cas_prop, dist in casospropers:
+            if not quiet:
+                print(cas_prop.noms_obres)
 
-        print(puntuacio_obres)
-        probs_obres = []
+            pes = cas_prop.valoracio * 2 - 1 # Passar a [-1, 1]
+            pes = pes * dist
+            puntuacions = obres.Titol.isin(cas_prop.noms_obres) * pes
+            punt_obres += puntuacions
 
-        for obra,scores in puntuacio_obres.items():
-            pesf = scores["pos"] - scores["neg"]
-            probs_obres.append((obra, pesf))
-        print(probs_obres)
+        # Softmax
+        probs_obres = np.exp(punt_obres)
+        probs_obres /= punt_obres.max()
 
-        min_pes = min(pes for _, pes in probs_obres)
-        print(min_pes)
-        if min_pes < 0:
-            probs_obres_norm = [(obra, pes - min_pes) for obra, pes in probs_obres]
+        if not quiet:
+            print(probs_obres)
 
-        print(probs_obres_norm)
-
-        obres = pd.read_csv("dades/obres.csv")
-        temps_obres = dict(zip(obres['Titol'], obres['Temps']))
-
+        probs_obres[recomanacio] = 0
         while temps_acumulat < case.temps:
-            obra_seleccionada = random.choices([obra for obra, _ in probs_obres_norm], weights=[pes for _, pes in probs_obres_norm], k=1)[0]
-        cas_recomanat.append(obra_seleccionada)
-        temps_acumulat += temps_obres[obra_seleccionada]
+            o = random.choices(range(obres.shape[0]), probs_obres)
+            recomanacio[o] = True
+            probs_obres[o] = 0
+            temps_acumulat += obres.iloc[o].Temps
 
-        tempo = 0
-        if any(artista in domini['artistes'] for artista in case.noms_artistes):
-            obres_pref = []
-            for _, obra in obres.iterrows(): 
-                if obra['Artista'] in case.noms_artistes: 
-                    obres_pref.append(obra)
-                    tempo += obra['Temps']
-            while tempo > 0:
-                obra_treure = cas_recomanat.pop()
-                tempo -= obra_treure['Temps']
-            for obra in obres_pref:
-                cas_recomanat.append(obra)
+        case.obres = recomanacio
 
-        tempo2 = 0
-        if any(periode in domini['periodes'] for periode in case.noms_periodes):
-            obres_pref2 = []
-            for _, obra in obres.iterrows(): 
-                if obra['Periode'] in case.noms_periodes: 
-                    obres_pref2.append(obra)
-                    tempo2 += obra['Temps']
-            
-        while tempo2 > 0 and cas_recomanat: 
-            obra_treure = cas_recomanat[-1] 
-            if obra_treure['Artista'] in case.noms_artistes:
-                cas_recomanat = cas_recomanat[:-1] + [obra_treure]
-                continue
-            cas_recomanat.pop()  
-            tempo2 -= obra_treure['Temps']
-            for obra in obres_pref2:
-                cas_recomanat.append(obra)
+        if not quiet:
+            print(f" Cas recomanat: {obres[recomanacio].Titol}")
+        return obres[recomanacio].Titol
 
-        
-
-        print(f" Cas recomanat: {cas_recomanat}")
-        return cas_recomanat
-
-    def retain(self, cas):
+    def retain(self, cas, quiet=False):
         """
         Emmagatzema el nou cas i la seva solució al sistema de casos.
         """
-        print("\n=== Retain ===")
-        valorar(cas)
+        if not quiet:
+            print("\n=== Retain ===")
         #extreure valoracions
-        tots_casos = self.root.recorre_fulles()
-        total_casos = len(tots_casos)
-        valoracions = [cas.valoracio for cas in tots_casos]
-        mitjana = sum(valoracions) / total_casos
-        interval_5 = 0.1 * mitjana
-        valoracio = cas.valoracio
-        if valoracio < (mitjana - interval_5) or valoracio > (mitjana + interval_5):
-            self.root.feed(cas) 
-                    
+        tots_casos = self.arbre.recorre_fulles()
+        v25, v75 = np.percentile([cas.valoracio for cas in tots_casos], [25, 75])
+        print(v25, v75)
+        if cas.valoracio < v25 or cas.valoracio > v75:
+            self.arbre.feed(cas)
 
 
-    def crb(self, case):
+    def __call__(self, case, quiet=False):
         """
         Implementa tot el cicle CRB per un cas donat.
         """
         # 1. Retrieve
-        top_cases = self.retrieve(case)
+        top_cases = self.retrieve(case, quiet=quiet)
 
         # 2. Reuse
-        solution = self.reuse(top_cases, case)
+        solution = self.reuse(top_cases, case, quiet=quiet)
+
+        # 3. Valorar
+        valorar(case)
 
         # 4. Retain
-        self.retain(solution)
+        self.retain(case, quiet=quiet)
 
-        print("\n=== CRB Finalitzat ===")
+        if not quiet:
+            print("\n=== CRB Finalitzat ===")
         return solution
