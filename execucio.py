@@ -20,24 +20,14 @@ for cas in casos_inicials: arbre.feed(cas)
 
 cbr = CBR(arbre)
 
-print('\n=== Baseline ===')
-casos_baseline = generar_casos(100)
-valoracions = []
-for i, cas in enumerate(casos_baseline, 1):
-    cbr(cas)
-    if i % 100 == 0:
-        arbre.mantenir()
-    valoracions.append(cas.valoracio)
-    print('\r', i, '/', len(casos_baseline), end='')
-baseline = sum(valoracions) / len(valoracions)
-print()
-
 print('\n=== Entrenament ===')
 casos_entrenament = generar_casos(10000)
+valoracions_entrenament = []
 for i, cas in enumerate(casos_entrenament, 1):
     cbr(cas)
     if i % 100 == 0:
         arbre.mantenir()
+    valoracions_entrenament.append(cas.valoracio)
     print('\r', i, '/', len(casos_entrenament), end='')
 print()
 
@@ -57,14 +47,14 @@ jocs_test = [
     [1, 15, 120, 1, ["Frans Hals"], ["Baroque"]],  # Artista barroc amb temps petit
 ]
 
-valoracions = []
+valoracions_test = []
 verbose = False
 for i, joc in enumerate(jocs_test, 1):
     if verbose:
         print(f"\n--- Joc de Prova {i}: ---")
     cas = Cas(*joc)  # Crear un cas de prova
     cbr(cas)
-    valoracions.append(cas.valoracio)  # Guardar l'avaluació
+    valoracions_test.append(cas.valoracio)  # Guardar l'avaluació
     if verbose:
         print("Obres Recomanades:", end='')
         print('', *cas.noms_obres, sep='\n - ')
@@ -72,12 +62,16 @@ for i, joc in enumerate(jocs_test, 1):
 # Pas 4: Resumir resultats
 print("\n=== Resum dels Resultats ===")
 print("Avaluacions dels Jocs de Prova:")
-for i, valor in enumerate(valoracions, 1):
+for i, valor in enumerate(valoracions_test, 1):
     print(f"Valoració {i} = {valor:.4f}")
 
-avg_valoracio = sum(valoracions) / len(valoracions)
-print(f"\nMitjana de Valoracions: {avg_valoracio:.4f}")
-print(f"Baseline: {baseline:.4f}\n")
+avg_train_ini = sum(valoracions_entrenament[:100])/100
+avg_test = sum(valoracions_test) / len(valoracions_test)
+print(f"\nMitjana de Valoracions dels jocs de prova: {avg_test:.4f}")
+print(f"Baseline: {avg_train_ini:.4f}\n")
 
-
+import matplotlib.pyplot as plt
+plt.plot(valoracions_entrenament)
+plt.title("Valoracions entrenament")
+plt.show()
 
