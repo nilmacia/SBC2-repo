@@ -2,12 +2,18 @@ import numpy as np
 
 layer_th = [
     [2, 4, 8],        # nombre
-    [10, 20, 40, 70], # edat
-    [120, 300, 600, 1800],  # temps
+    [16, 65], # edat
+    [120, 300, 600, 1200],  # temps
 ]
 
 class Arbre:
     def __init__(self, i=0, maxsize=10000):
+        """
+        Inicialitza l'arbre amb una profunditat 'i' i un tamany de fulla 'maxsize'.
+
+        :param i: profunditat de l'arbre (0 per defecte)
+        :param maxsize: tamany de fulla (10000 per defecte)
+        """
         if i < len(layer_th):
             self.children = [Arbre(i+1) for _ in range(len(layer_th) + 1)]
         else:
