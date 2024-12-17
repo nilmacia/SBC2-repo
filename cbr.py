@@ -109,15 +109,18 @@ class CBR:
 
             pes = cas_prop.valoracio * 2 - 1 # Passar a [-1, 1]
             pes = pes * dist
-            puntuacions = obres.Titol.isin(cas_prop.noms_obres) * pes
+            puntuacions = np.isin(obres.Titol, cas_prop.noms_obres) * pes
             punt_obres += puntuacions
-        probs_obres = (punt_obres - punt_obres.min()) / (punt_obres.max() - punt_obres.min())
+
+        # Softmax
+        probs_obres = np.exp(punt_obres - punt_obres.max())
+        probs_obres /= probs_obres.max()
 
         if not quiet:
             print(probs_obres)
 
         probs_obres[recomanacio] = 0.
-        while temps_acumulat < case.temps:
+        while temps_acumulat < case.temps and recomanacio.sum() > obres.shape[0]:
             o = random.choices(range(obres.shape[0]), probs_obres)[0]
             recomanacio[o] = True
             probs_obres[o] = 0.
