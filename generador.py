@@ -112,25 +112,14 @@ def generar_casos(n):
     t_dia = (hores * 60).round().astype(int)
 
     # DIES
-    m = np.empty(n, int)
     p = np.empty(n)
+    p[generacio == 'infant'] = 0.2
+    p[generacio == 'adolescent'] = 0.25
+    p[generacio == 'jove'] = 0.3
+    p[generacio == 'adult'] = 0.35
+    p[generacio == 'vell'] = 0.4
 
-    m[generacio == 'infant'] = 0
-    p[generacio == 'infant'] = 0.
-
-    m[generacio == 'adolescent'] = 2
-    p[generacio == 'adolescent'] = 0.05
-
-    m[generacio == 'jove'] = 2
-    p[generacio == 'jove'] = 0.1
-
-    m[generacio == 'adult'] = 4
-    p[generacio == 'adult'] = 0.1
-
-    m[generacio == 'vell'] = 4
-    p[generacio == 'vell'] = 0.2
-
-    dies = 1 + rng.binomial(m, p)
+    dies = 1 + rng.binomial(2, p)
 
     # ARTISTES
     artistes = rng.binomial(1, 1/len(noms['artistes']), (n, len(noms['artistes'])))
