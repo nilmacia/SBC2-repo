@@ -75,50 +75,30 @@ def recomanar_random(casos):
 def generar_casos(n):
     # MIDA
     mida = rng.choice(('individu', 'parella', 'grup', 'gran'), n)
-
     nombre = np.empty(n, int)
     nombre[mida == 'individu'] = 1
     nombre[mida == 'parella'] = 2
-    nombre[mida == 'grup'] = 3 + rng.binomial(4, 0.25, np.sum(mida == 'grup'))
-    nombre[mida == 'gran'] = rng.uniform(8, 16, np.sum(mida == 'gran')).astype(int)
+    nombre[mida == 'grup'] = rng.integers(3, 8, (mida == 'grup').sum())
+    nombre[mida == 'gran'] = rng.integers(8, 16, (mida == 'gran').sum())
 
     # EDAT
-    generacio = rng.choice(('infant', 'adolescent', 'jove', 'adult', 'vell'), n)
-
-    mean = np.empty(n)
-    std = np.empty(n)
-
-    mean[generacio == 'infant'] = 8.
-    std[generacio == 'infant'] = 1.
-
-    mean[generacio == 'adolescent'] = 15.
-    std[generacio == 'adolescent'] = 1.5
-
-    mean[generacio == 'jove'] = 28.
-    std[generacio == 'jove'] = 3.
-
-    mean[generacio == 'adult'] = 50.
-    std[generacio == 'adult'] = 5.
-
-    mean[generacio == 'vell'] = 78.
-    std[generacio == 'vell'] = 4.
-
-    edat = rng.normal(mean, std).clip(5, 95).astype(int)
+    edat = rng.normal(50, 15, n).clip(5, 95).round().astype(int)
+    generacio = pd.cut(edat, [4, 10, 20, 35, 65, 96],
+                       labels=['infant', 'adolescent', 'jove', 'adult', 'juvilat'])
 
     # T_DIA
-    hores = np.log(edat)
-    hores = (hores - np.log(5)) * (7 - 1) / (np.log(95) - np.log(5)) + 1
-    hores += rng.binomial(3, 0.15, n)
-    t_dia = (hores * 60).round().astype(int)
+    t_dia = (np.log(edat) - np.log(5)) * (540 - 120) / (np.log(95) - np.log(5)) + 120
+    t_dia += rng.normal(0, 60, n)
+    t_dia = t_dia.clip(60, 600).round().astype(int)
 
     # DIES
-    p = np.empty(n)
-    p[generacio == 'infant'] = 0.2
-    p[generacio == 'adolescent'] = 0.25
-    p[generacio == 'jove'] = 0.3
-    p[generacio == 'adult'] = 0.35
-    p[generacio == 'vell'] = 0.4
-
+    p = generacio.map({
+        'infant': 0.2,
+        'adolescent': 0.25,
+        'jove': 0.3,
+        'adult': 0.35,
+        'juvilat': 0.4
+    }, na_action=0)
     dies = 1 + rng.binomial(2, p)
 
     # ARTISTES
