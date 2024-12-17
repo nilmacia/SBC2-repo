@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
 from generador import generar_casos, recomanar_random, valorar
 from arbre import Arbre
 from cbr import CBR
@@ -69,9 +72,6 @@ avg_train_ini = sum(valoracions_entrenament[:100])/100
 avg_test = sum(valoracions_test) / len(valoracions_test)
 print(f"\nMitjana de Valoracions dels jocs de prova: {avg_test:.4f}")
 print(f"Baseline: {avg_train_ini:.4f}\n")
-
-import matplotlib.pyplot as plt
-import numpy as np
 
 valoracions_entrenament = np.array(valoracions_entrenament).reshape(-1, 100).mean(-1)
 

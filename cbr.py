@@ -86,12 +86,15 @@ class CBR:
 
         temps_acumulat = obres[recomanacio].Temps.sum()
 
+        if temps_acumulat > case.temps:
+            pass
+
         # Agafar obres dels casos propers
         punts_obres = np.zeros(obres.shape[0])
         for cas_prop, dist in casospropers:
             pes = cas_prop.valoracio * 2 - 1 # Passar a [-1, 1]
             pes = pes * dist
-            puntuacions = np.isin(obres.Titol, cas_prop.noms_obres) * pes
+            puntuacions = case.obres * pes
             punts_obres += puntuacions
 
         # Softmax
@@ -101,7 +104,7 @@ class CBR:
         probs_obres[recomanacio] = 0.
         probs_obres /= probs_obres.sum()
 
-        while temps_acumulat < case.temps and recomanacio.sum() > obres.shape[0]:
+        while temps_acumulat < case.temps and recomanacio.sum() < obres.shape[0]:
             o = random.choices(range(obres.shape[0]), probs_obres)[0]
             recomanacio[o] = True
             probs_obres[o] = 0.
