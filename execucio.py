@@ -115,20 +115,21 @@ cas1 = crear_cas()
 top_casos = cbr.retrieve(cas1)
 
 # Reutilitzar els casos i obtenir les obres seleccionades
-obres_visitar = cbr.reuse(top_casos, cas1)
+for _ in range(3):
+    obres_visitar = cbr.reuse(top_casos, cas1)
 
-# Mostrar les obres seleccionades per visitar
-print("\nObres seleccionades per visitar en el cas:")
-for obra in cas1.noms_obres:
-    print(f"- {obra}")
+    # Mostrar les obres seleccionades per visitar
+    print("\nObres seleccionades per visitar en el cas:")
+    for obra in cas1.noms_obres:
+        print(f"- {obra}")
 
-# Preguntar a l'usuari per introduir una valoració numèrica
-valoracio = float(input("\nIntrodueix una valoració per aquesta proposta (ex: 1-10): "))
+    # Preguntar a l'usuari per introduir una valoració numèrica
+    valoracio = float(input("\nIntrodueix una valoració per aquesta proposta (ex: 1-10): "))
 
-# Assignar la valoració al cas
-cas1.valoracio = valoracio
+    # Assignar la valoració al cas
+    cas1.valoracio = valoracio
 
-# Fer el retain per afegir el cas amb la seva valoració i obres al sistema
-cbr.retain(cas1)
+    # Fer el retain per afegir el cas amb la seva valoració i obres al sistema
+    cbr.retain(cas1)
 
 print("\nEl cas s'ha guardat correctament al sistema amb la nova valoració i obres seleccionades.")
