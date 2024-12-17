@@ -71,7 +71,13 @@ print(f"\nMitjana de Valoracions dels jocs de prova: {avg_test:.4f}")
 print(f"Baseline: {avg_train_ini:.4f}\n")
 
 import matplotlib.pyplot as plt
+import numpy as np
+
+valoracions_entrenament = np.array(valoracions_entrenament).reshape(-1, 100).mean(-1)
+
 plt.plot(valoracions_entrenament)
 plt.title("Valoracions entrenament")
+plt.savefig('dades/corva_entrenament')
 plt.show()
+
 

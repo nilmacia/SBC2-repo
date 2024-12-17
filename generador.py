@@ -8,64 +8,29 @@ rng = np.random.default_rng()
 with open('dades/domini.json') as f:
     domini = json.load(f)
 
-df = pd.read_csv('dades/obres.csv')
+obres = pd.read_csv('dades/obres.csv')
 
 def valorar(cas):
-    def bell(x, a, b):
-        return np.exp(-(x - b)**2/(2*((b - a)*0.35)**2))
-    
-    def rescale(x, a, b, c, d):
-        return (x-a) * (d-c) / (b-a) +c
-
-    def coef(x, a, b, c):
-        x = bell(x, a, b)
-        return rescale(x, 0, 1, 1-c, 1+c)
-
-    noms_artistes = noms['artistes'][cas.artistes]
-    noms_periodes = noms['periodes'][cas.periodes]
-
-    # temps
-    temps_obres = df.Temps.astype(float) * cas.obres
-    temps_obres[df.Artista.isin(noms_artistes) | df.Periode.isin(noms_periodes)] *= 1.1
-    temps_obres = temps_obres.sum()
-    temps_obres *= coef(cas.edat, 5, 95, 0.2)
-
-    temps_trasllats = df.Sala.max() * 2
-    temps_trasllats *= coef(np.abs(50 - cas.edat), 0, 45, 0.2)
-
-    temps_visita = temps_obres + temps_trasllats
-    temps_visita *= coef(cas.nombre, 1, 15, 0.2)
-    temps_visita *= rng.normal(1, 0.1, temps_visita.shape).clip(0.7, 1.3)
-    
-    diff = temps_visita/cas.temps
-    diff = np.minimum(diff, 1/diff)
-    valoracio_temps = bell(diff, 0, 1)
-
     # preferencies
-    obres = df[cas.obres]
+    no_pref = ~(obres.Artista.isin(cas.noms_artistes) | obres.Periode.isin(cas.noms_periodes))
+    obres_no_pref = obres[cas.obres & no_pref]
     preferencies = set(domini['periodes'][p] for p in noms_periodes)
     periode_artistes = set(domini['artistes'][a] for a in noms_artistes)
     preferencies.union(domini['periodes'][p] for p in periode_artistes)
     if preferencies:
-        preferencies = np.array(list(preferencies))
-        recomanacio = np.array([domini['periodes'][p] for p in obres.Periode])
-        dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
-        dist[obres.Artista.isin(noms_artistes)] -= 1
-        dist = dist.mean()
-    else:
-        dist = 0
-
-    valoracio_preferencies = bell(dist, 7, -1)
-
-    cas.valoracio = valoracio_temps * valoracio_preferencies
+    preferencies = np.array(list(preferencies))
+    recomanacio = np.array([domini['periodes'][p] for p in obres.Periode])
+    dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
+    dist[obres.Artista.isin(noms_artistes)] -= 1
+    dist = dist.mean()
 
 
 def recomanar_random(casos):
     t = np.array([c.temps for c in casos])
-    t -= df.Sala.max() * 2
-    n_obres_aprox = t / df.Temps.mean()
-    p = np.clip(n_obres_aprox / df.shape[0], None, 1)
-    p = np.tile(p, (df.shape[0], 1)).T
+    t -= obres.Sala.max() * 2
+    n_obres_aprox = t / obres.Temps.mean()
+    p = np.clip(n_obres_aprox / obres.shape[0], None, 1)
+    p = np.tile(p, (obres.shape[0], 1)).T
     recomanacio = rng.binomial(1, p).astype(bool)
 
     for c, r in zip(casos, recomanacio):
