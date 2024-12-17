@@ -171,8 +171,6 @@ class CBR:
         mitjana = sum(valoracions) / total_casos
         interval_5 = 0.1 * mitjana
         valoracio = solution.valoracio
-<<<<<<< HEAD
-        
         if valoracio < (mitjana - interval_5) or valoracio > (mitjana + interval_5):
             self.root.feed(case) 
                     
@@ -196,7 +194,3 @@ class CBR:
 
         print("\n=== CRB Finalitzat ===")
         return revised_solution
-=======
-        if valoracio > 0.6 and valoracio < 0.4:
-            self.root.feed(case)
->>>>>>> 5ddf582af24e5d5b365c796a2653863d3b2f3cf1
