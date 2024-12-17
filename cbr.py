@@ -152,6 +152,7 @@ class CBR:
         # 1. Retrieve
         top_cases = self.retrieve(case, quiet=quiet)
         if top_cases is None:
+            print(case.nombre, case.edat, case.temps)
             print("FULLA BUIDA")
             return
 
