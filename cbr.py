@@ -176,12 +176,16 @@ class CBR:
         print("\n=== Retain ===")
         valorar(solution)
         #extreure valoracions
-        valoracio = []
-        for cas in ...:
-            valoracions = valoracio.append(cas.valoracio)
+        tots_casos = self.root.recorre_fulles()
+        total_casos = len(tots_casos)
+        valoracions = [cas.valoracio for cas in tots_casos]
+        mitjana = sum(valoracions) / total_casos
+        interval_5 = 0.1 * mitjana
         valoracio = solution.valoracio
-        if valoracio > 0.6 and valoracio < 0.4:
-            self.root.feed(case)
+        
+        if valoracio < (mitjana - interval_5) or valoracio > (mitjana + interval_5):
+            self.root.feed(case) 
+                    
 
 
     def crb(self, case):

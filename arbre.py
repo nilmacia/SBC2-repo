@@ -28,3 +28,12 @@ class Arbre:
     def feed(self, cas):
         leaf = self.__search_leaf(cas)
         leaf.casos.add(cas)
+
+    def recorre_fulles(self):
+        casos = []
+        if self.i < len(layer_th):
+            for child in self.children:
+                casos.extend(child.recorre_fulles()) 
+        else: 
+            casos.extend(self.casos)
+        return casos
