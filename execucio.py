@@ -68,10 +68,8 @@ print("Avaluacions dels Jocs de Prova:")
 for i, valor in enumerate(valoracions_test, 1):
     print(f"Valoració {i} = {valor:.4f}")
 
-avg_train_ini = sum(valoracions_entrenament[:100])/100
 avg_test = sum(valoracions_test) / len(valoracions_test)
 print(f"\nMitjana de Valoracions dels jocs de prova: {avg_test:.4f}")
-print(f"Baseline: {avg_train_ini:.4f}\n")
 
 valoracions_entrenament = np.array(valoracions_entrenament).reshape(-1, 100).mean(-1)
 
