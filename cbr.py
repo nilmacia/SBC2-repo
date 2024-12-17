@@ -87,6 +87,7 @@ class CBR:
         """
         print("\n=== Reuse ===")
         cas_recomanat =  []
+        temps_acumulat = 0
 
         min_dist, max_dist = 0, max([dist for _, dist in casospropers])
         #Valoracio entenc que està entre -1 i 1
@@ -99,6 +100,7 @@ class CBR:
             dist_norm = 1 - (max_dist - dist) / (max_dist - min_dist)
             
             pes_cas = a* c.valoracio + b*dist_norm
+            print(c.obres)
             for obra in c.obres:
                 if obra not in puntuacio_obres:
                     puntuacio_obres[obra] = {"pos": 0, "neg": 0}
@@ -106,22 +108,47 @@ class CBR:
                     puntuacio_obres[obra]["pos"] += pes_cas
                 else:
                     puntuacio_obres[obra]["neg"] += abs(pes_cas)
-            
-
+        puntuacio_obres = {
+    "obra_1": {"pos": 4.5, "neg": 1.2},
+    "obra_2": {"pos": 0.0, "neg": 3.8},
+    "obra_3": {"pos": 7.2, "neg": 0.0},
+    "obra_4": {"pos": 2.3, "neg": 0.5},
+    "obra_5": {"pos": 0.0, "neg": 1.7},
+    "obra_6": {"pos": 5.1, "neg": 0.3},
+    "obra_7": {"pos": 0.0, "neg": 2.4},
+    "obra_8": {"pos": 3.4, "neg": 0.9},
+    "obra_9": {"pos": 1.0, "neg": 0.0},
+    "obra_10": {"pos": 0.0, "neg": 5.2},
+    "obra_11": {"pos": 6.8, "neg": 0.0},
+    "obra_12": {"pos": 1.9, "neg": 0.2},
+    "obra_13": {"pos": 0.3, "neg": 2.8},
+    "obra_14": {"pos": 4.0, "neg": 0.7},
+    "obra_15": {"pos": 2.5, "neg": 1.0}
+}    
+        print(puntuacio_obres)
         probs_obres = []
+
         for obra,scores in puntuacio_obres.items():
             pesf = scores["pos"] - scores["neg"]
             probs_obres.append((obra, pesf))
+        print(probs_obres)
 
         min_pes = min(pes for _, pes in probs_obres)
+        print(min_pes)
         if min_pes < 0:
             probs_obres_norm = [(obra, pes - min_pes) for obra, pes in probs_obres]
 
-        while cas_recomanat.temps < case.temps:
-            obra_seleccionada = random.choices([obra for obra, _ in probs_obres_norm], weights=[pes for _, pes in probs_obres_norm], k=1)[0]
-        cas_recomanat.append(obra_seleccionada)
+        print(probs_obres_norm)
 
         obres = pd.read_csv("dades/obres.csv")
+        temps_obres = dict(zip(obres['Titol'], obres['Temps']))
+
+        while temps_acumulat < case.temps:
+            obra_seleccionada = random.choices([obra for obra, _ in probs_obres_norm], weights=[pes for _, pes in probs_obres_norm], k=1)[0]
+        cas_recomanat.append(obra_seleccionada)
+        temps_acumulat += temps_obres[obra_seleccionada]
+
+        
         tempo = 0
         if any(artista in domini['artistes'] for artista in case.noms_artistes):
             obres_pref = []
