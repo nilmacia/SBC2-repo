@@ -40,11 +40,10 @@ valoracions = []
 for i, joc in enumerate(jocs_test, 1):
     print(f"\n--- Joc de Prova {i}: ---")
     cas = Cas(*joc)  # Crear un cas de prova
-    top_casos = cbr.retrieve(cas)  # Recuperar casos similars
-    solution = cbr.reuse(top_casos, cas)  # Generar una recomanació
-    valorar(cas)  # Avaluar la solució
-    valoracions.append(cas.valoracio)  # Guardar l'avaluació
-    print(f"Obres Recomanades: {cas.noms_obres}")
+    cbr(cas)
+    if cas.obres is not None:
+        valoracions.append(cas.valoracio)  # Guardar l'avaluació
+        print(f"Obres Recomanades: {cas.noms_obres}")
 
 # Pas 4: Resumir resultats
 print("\n=== Pas 4: Resum dels Resultats ===")

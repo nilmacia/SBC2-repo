@@ -167,4 +167,3 @@ class CBR:
 
         if not quiet:
             print("\n=== CRB Finalitzat ===")
-        return solution
