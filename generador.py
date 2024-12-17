@@ -98,7 +98,7 @@ def generar_casos(n):
         'jove': 0.3,
         'adult': 0.35,
         'juvilat': 0.4
-    }, na_action=0)
+    })
     dies = 1 + rng.binomial(2, p)
 
     # ARTISTES
