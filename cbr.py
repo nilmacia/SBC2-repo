@@ -111,10 +111,7 @@ class CBR:
             pes = pes * dist
             puntuacions = obres.Titol.isin(cas_prop.noms_obres) * pes
             punt_obres += puntuacions
-
-        # Softmax
-        probs_obres = np.exp(punt_obres - punt_obres.max())
-        probs_obres /= probs_obres.max()
+        probs_obres = (punt_obres - punt_obres.min()) / (punt_obres.max() - punt_obres.min())
 
         if not quiet:
             print(probs_obres)
