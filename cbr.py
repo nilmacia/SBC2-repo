@@ -51,18 +51,14 @@ class CBR:
 
         return combined_distance
 
-    def retrieve(self, case, quiet=False):
+    def retrieve(self, case):
         """
         Busca els 5 casos més propers en el sistema de casos, considerant artistes, periodes, edat i
         hores.
         """
-        if not quiet:
-            print("=== Retrieve ===")
         leaf_cases = self.arbre.fetch(case)  # Recuperem tots els casos de la fulla
         if len(leaf_cases) == 0:
-            if not quiet:
-                print("  -> No s'ha trobat cap cas similar (nou cas).")
-            return None
+            return []
         else:
             # Calcular distàncies per a tots els casos de les fulles
             distances = [
@@ -76,24 +72,13 @@ class CBR:
             # Seleccionar els 5 millors casos
             top_cases = distances[:5]
 
-            # Mostrar resultats
-            if not quiet:
-                print(f"  -> Els {len(top_cases)} millors casos recuperats:")
-                for i, (retrieved_case, dist) in enumerate(top_cases, 1):
-                    print(f"     {i}. Cas: {retrieved_case}, Distància: {dist:.4f}")
-
             # Retornar els millors casos
             return top_cases
 
-    def reuse(self, casospropers, case, quiet=False):
+    def reuse(self, casospropers, case):
         """
         Adapta la informació del cas recuperat per crear una solució inicial pel nou cas.
         """
-        # ALERTA: Les distàncies ja estan normalitzades a la funció de distància, no cal tornar-les
-        # normalitzar, i recordem que la valoració va de 0 a 1 ara mateix
-        if not quiet:
-            print("\n=== Reuse ===")
-
         # Prioritzar preferències
         recomanacio = obres.Artista.isin(case.noms_artistes)
         recomanacio |= obres.Periode.isin(case.noms_periodes)
@@ -102,68 +87,51 @@ class CBR:
         temps_acumulat = obres[recomanacio].Temps.sum()
 
         # Agafar obres dels casos propers
-        punt_obres = np.zeros(obres.shape[0])
+        punts_obres = np.zeros(obres.shape[0])
         for cas_prop, dist in casospropers:
-            if not quiet:
-                print(cas_prop.noms_obres)
-
             pes = cas_prop.valoracio * 2 - 1 # Passar a [-1, 1]
             pes = pes * dist
             puntuacions = np.isin(obres.Titol, cas_prop.noms_obres) * pes
-            punt_obres += puntuacions
+            punts_obres += puntuacions
 
         # Softmax
-        probs_obres = np.exp(punt_obres - punt_obres.max())
-        probs_obres /= probs_obres.max()
-
-        if not quiet:
-            print(probs_obres)
+        probs_obres = np.exp(punts_obres - punts_obres.max())
+        probs_obres /= probs_obres.sum()
 
         probs_obres[recomanacio] = 0.
+        probs_obres /= probs_obres.sum()
+
         while temps_acumulat < case.temps and recomanacio.sum() > obres.shape[0]:
             o = random.choices(range(obres.shape[0]), probs_obres)[0]
             recomanacio[o] = True
             probs_obres[o] = 0.
+            probs_obres /= probs_obres.sum()
             temps_acumulat += obres.iloc[o].Temps
 
         case.obres = recomanacio
 
-        if not quiet:
-            print(f" Cas recomanat: {obres[recomanacio].Titol}")
-        return obres[recomanacio].Titol
-
-    def retain(self, cas, quiet=False):
+    def retain(self, cas):
         """
         Emmagatzema el nou cas i la seva solució al sistema de casos.
         """
-        if not quiet:
-            print("\n=== Retain ===")
-        #extreure valoracions
         tots_casos = self.arbre.recorre_fulles()
         v25, v75 = np.percentile([cas.valoracio for cas in tots_casos], [25, 75])
         if cas.valoracio < v25 or cas.valoracio > v75:
             self.arbre.feed(cas)
 
 
-    def __call__(self, case, quiet=False):
+    def __call__(self, case):
         """
         Implementa tot el cicle CRB per un cas donat.
         """
         # 1. Retrieve
-        top_cases = self.retrieve(case, quiet=quiet)
-        if top_cases is None:
-            print(case.nombre, case.edat, case.temps)
-            print("FULLA BUIDA")
-            return
+        top_cases = self.retrieve(case)
 
         # 2. Reuse
-        solution = self.reuse(top_cases, case, quiet=quiet)
+        self.reuse(top_cases, case)
 
         # 3. Valorar
         valorar(case)
 
         # 4. Retain
-        self.retain(case, quiet=quiet)
-
-        if not quiet:
-            print("\n=== CRB Finalitzat ===")
+        self.retain(case)
