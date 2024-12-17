@@ -24,7 +24,7 @@ for cas in casos_inicials: arbre.feed(cas)
 cbr = CBR(arbre)
 
 print('\n=== Entrenament ===')
-casos_entrenament = generar_casos(10000)
+casos_entrenament = generar_casos(1000)
 valoracions_entrenament = []
 for i, cas in enumerate(casos_entrenament, 1):
     cbr(cas)
@@ -71,7 +71,7 @@ for i, valor in enumerate(valoracions_test, 1):
 avg_test = sum(valoracions_test) / len(valoracions_test)
 print(f"\nMitjana de Valoracions dels jocs de prova: {avg_test:.4f}")
 
-valoracions_entrenament = np.array(valoracions_entrenament).reshape(-1, 100).mean(-1)
+valoracions_entrenament = np.array(valoracions_entrenament).reshape(-1, 10).mean(-1)
 
 plt.plot(valoracions_entrenament)
 plt.title("Valoracions entrenament")
@@ -79,3 +79,56 @@ plt.savefig('dades/corva_entrenament')
 plt.show()
 
 
+def crear_cas():
+    # Preguntes a l'usuari
+    nombre = int(input("Quantes persones feu la visita? "))  # Assegura que sigui un enter
+    edat = int(input("Quina és l'edat més representativa del grup? "))
+    t_dia = float(input("Quant temps tens per fer la visita (per dia i en minuts)? "))
+    dies = int(input("Quants dies durarà la teva visita? "))
+
+    # Preguntes per artistes i periodes
+    artistes_input = input("Quins artistes vols incloure? (Separats per comes) ")
+    periodes_input = input("Quins períodes vols incloure? (Separats per comes) ")
+
+    # Convertir les respostes a llistes
+    artistes = artistes_input.split(",") if artistes_input else []
+    periodes = periodes_input.split(",") if periodes_input else []
+
+    # Comprovar si els artistes i periodes són correctes dins del domini
+    artistes_valids = ["Vincent van Gogh", "Claude Monet", "Leonardo da Vinci", "Anthony van Dyck", "Rembrandt (Rembrandt van Rijn)", "Frans Hals"]
+    periodes_valids = ["Renaissance", "Baroque", "Realism", "Impressionism"]
+
+    artistes = [art.strip() for art in artistes if art.strip() in artistes_valids]
+    periodes = [per.strip() for per in periodes if per.strip() in periodes_valids]
+
+    # Crear la instància de la classe Cas
+    cas = Cas(nombre, edat, t_dia, dies, artistes, periodes)
+
+    # Debug per verificar les dades
+    print("Dades del cas creat:", cas.__dict__)
+
+    return cas
+
+cas1 = crear_cas()
+
+# Executar el retrieve per obtenir els casos més semblants
+top_casos = cbr.retrieve(cas1)
+
+# Reutilitzar els casos i obtenir les obres seleccionades
+obres_visitar = cbr.reuse(top_casos, cas1)
+
+# Mostrar les obres seleccionades per visitar
+print("\nObres seleccionades per visitar en el cas:")
+for obra in cas1.noms_obres:
+    print(f"- {obra}")
+
+# Preguntar a l'usuari per introduir una valoració numèrica
+valoracio = float(input("\nIntrodueix una valoració per aquesta proposta (ex: 1-10): "))
+
+# Assignar la valoració al cas
+cas1.valoracio = valoracio
+
+# Fer el retain per afegir el cas amb la seva valoració i obres al sistema
+cbr.retain(cas1)
+
+print("\nEl cas s'ha guardat correctament al sistema amb la nova valoració i obres seleccionades.")
