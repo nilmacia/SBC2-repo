@@ -3,7 +3,7 @@ from arbre import Arbre
 from cbr import CBR
 from cas import Cas
 
-casos_inicials = generar_casos(1000)
+casos_inicials = generar_casos(10000)
 recomanar_random(casos_inicials)
 for cas in casos_inicials: valorar(cas)
 
@@ -12,7 +12,7 @@ for cas in casos_inicials: arbre.feed(cas)
 
 cbr = CBR(arbre)
 
-casos_entrenament = generar_casos(1000)
+casos_entrenament = generar_casos(10000)
 for i, cas in enumerate(casos_entrenament, 1):
     cbr(cas, quiet=True)
     if i % 100 == 0:

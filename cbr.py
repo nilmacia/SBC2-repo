@@ -151,6 +151,9 @@ class CBR:
         """
         # 1. Retrieve
         top_cases = self.retrieve(case, quiet=quiet)
+        if top_cases is None:
+            print("FULLA BUIDA")
+            return
 
         # 2. Reuse
         solution = self.reuse(top_cases, case, quiet=quiet)
