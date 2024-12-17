@@ -43,10 +43,27 @@ class Cas:
         return list(noms['obres'][self.obres])
 
     @staticmethod
-    def guardar(casos, path):
+    def guardar(casos):
         casos = [
             [cas.nombre, cas.edat, cas.temps, cas.dies,
              *cas.artistes, *cas.periodes, *cas.obres, cas.valoracio]
         for cas in casos]
         casos = np.array(casos)
-        np.save('dades/casos', casos)
+        np.save('dades/casos.npy', casos)
+    
+    @staticmethod
+    def carregar():
+        casos = np.load('dades/casos.npy')
+        stack = []
+        for cas in casos:
+            stack.append(Cas(
+                cas[0].astype(int),
+                cas[1].astype(int),
+                cas[2].astype(int),
+                cas[3].astype(int),
+                cas[4:12].astype(bool),
+                cas[12:92].astype(bool)
+            ))
+            stack[-1].obres = cas[92:-1].astype(bool)
+            stack[-1].valoracio = cas[-1]
+        return stack
