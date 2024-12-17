@@ -25,14 +25,14 @@ for i, cas in enumerate(casos_entrenament, 1):
 print("\n=== Pas 3: Proves del Sistema ===")
 jocs_test = [
     [4, 20, 300, 1, ["Vincent van Gogh"], []],  # Cas de prova: Artista conegut, sense període
-    [2, 40, 600, 2, ["Pablo Picasso"], ["Cubisme"]],  # Artista i període coneguts
+    [2, 40, 300, 2, ["Pablo Picasso"], ["Cubisme"]],  # Artista i període coneguts
     [8, 25, 120, 1, ["Leonardo da Vinci"], []],  # Artista conegut amb pressupost de temps petit
-    [5, 30, 1800, 3, [], ["Renaixament"]],  # Període conegut, sense artista
-    [10, 50, 240, 2, [], []],  # Cas completament aleatori (sense artista ni període)
+    [5, 30, 600, 3, [], ["Renaixament"]],  # Període conegut, sense artista
+    [10, 50, 120, 2, [], []],  # Cas completament aleatori (sense artista ni període)
     [3, 18, 180, 1, ["Claude Monet"], ["Impressionisme"]],  # Cas equilibrat
-    [6, 22, 360, 2, ["Frida Kahlo"], ["Modernisme"]],  # Artista i període modern
-    [7, 28, 900, 3, ["Edvard Munch"], []],  # Artista conegut amb temps ample
-    [9, 35, 1500, 3, [], ["Barroc"]],  # Període conegut amb temps més llarg
+    [6, 22, 180, 2, ["Frida Kahlo"], ["Modernisme"]],  # Artista i període modern
+    [7, 28, 300, 3, ["Edvard Munch"], []],  # Artista conegut amb temps ample
+    [9, 35, 500, 3, [], ["Barroc"]],  # Període conegut amb temps més llarg
     [1, 15, 120, 1, ["Salvador Dalí"], ["Surrealisme"]],  # Artista surrealisme amb temps petit
 ]
 
