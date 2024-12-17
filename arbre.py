@@ -3,7 +3,7 @@ import numpy as np
 layer_th = [
     [2, 4, 8],        # nombre
     [16, 65], # edat
-    [120, 300, 600, 1200],  # temps
+    [180, 360, 600, 1200],  # temps
 ]
 
 class Arbre:
