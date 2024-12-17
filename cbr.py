@@ -108,23 +108,9 @@ class CBR:
                     puntuacio_obres[obra]["pos"] += pes_cas
                 else:
                     puntuacio_obres[obra]["neg"] += abs(pes_cas)
-        puntuacio_obres = {
-    "obra_1": {"pos": 4.5, "neg": 1.2},
-    "obra_2": {"pos": 0.0, "neg": 3.8},
-    "obra_3": {"pos": 7.2, "neg": 0.0},
-    "obra_4": {"pos": 2.3, "neg": 0.5},
-    "obra_5": {"pos": 0.0, "neg": 1.7},
-    "obra_6": {"pos": 5.1, "neg": 0.3},
-    "obra_7": {"pos": 0.0, "neg": 2.4},
-    "obra_8": {"pos": 3.4, "neg": 0.9},
-    "obra_9": {"pos": 1.0, "neg": 0.0},
-    "obra_10": {"pos": 0.0, "neg": 5.2},
-    "obra_11": {"pos": 6.8, "neg": 0.0},
-    "obra_12": {"pos": 1.9, "neg": 0.2},
-    "obra_13": {"pos": 0.3, "neg": 2.8},
-    "obra_14": {"pos": 4.0, "neg": 0.7},
-    "obra_15": {"pos": 2.5, "neg": 1.0}
-}    
+  
+        #Mapejar el false o treu al titol de l'obra
+
         print(puntuacio_obres)
         probs_obres = []
 
@@ -148,7 +134,6 @@ class CBR:
         cas_recomanat.append(obra_seleccionada)
         temps_acumulat += temps_obres[obra_seleccionada]
 
-        
         tempo = 0
         if any(artista in domini['artistes'] for artista in case.noms_artistes):
             obres_pref = []
