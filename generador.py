@@ -14,15 +14,19 @@ def valorar(cas):
     # preferencies
     no_pref = ~(obres.Artista.isin(cas.noms_artistes) | obres.Periode.isin(cas.noms_periodes))
     obres_no_pref = obres[cas.obres & no_pref]
-    preferencies = set(domini['periodes'][p] for p in noms_periodes)
-    periode_artistes = set(domini['artistes'][a] for a in noms_artistes)
-    preferencies.union(domini['periodes'][p] for p in periode_artistes)
-    if preferencies:
+
+    preferencies = set(domini['periodes'][p] for p in cas.noms_periodes)
+    periode_artistes = set(domini['artistes'][a] for a in cas.noms_artistes)
+    preferencies.update(domini['periodes'][p] for p in periode_artistes)
     preferencies = np.array(list(preferencies))
-    recomanacio = np.array([domini['periodes'][p] for p in obres.Periode])
-    dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
-    dist[obres.Artista.isin(noms_artistes)] -= 1
-    dist = dist.mean()
+    recomanacio = np.array([domini['periodes'][p] for p in obres_no_pref.Periode])
+    if preferencies.size > 0 and recomanacio.size > 0:
+        dist = np.abs(recomanacio[:, None] - preferencies).min(-1)
+        dist = dist.mean()
+    else:
+        dist = 0.
+
+    cas.valoracio = -dist / 7 + 1
 
 
 def recomanar_random(casos):
