@@ -16,7 +16,6 @@ casos_entrenament = generar_casos(1000)
 for cas in casos_entrenament:
     top_casos = cbr.retrieve(cas)
     cbr.reuse(top_casos, cas)
-    valorar(cas)
     cbr.retain(cas)
 
 jocs_test = [

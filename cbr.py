@@ -158,21 +158,21 @@ class CBR:
         print(f" Cas recomanat: {cas_recomanat}")
         return cas_recomanat
 
-    def retain(self, case, solution):
+    def retain(self, cas):
         """
         Emmagatzema el nou cas i la seva solució al sistema de casos.
         """
         print("\n=== Retain ===")
-        valorar(solution)
+        valorar(cas)
         #extreure valoracions
         tots_casos = self.root.recorre_fulles()
         total_casos = len(tots_casos)
         valoracions = [cas.valoracio for cas in tots_casos]
         mitjana = sum(valoracions) / total_casos
         interval_5 = 0.1 * mitjana
-        valoracio = solution.valoracio
+        valoracio = cas.valoracio
         if valoracio < (mitjana - interval_5) or valoracio > (mitjana + interval_5):
-            self.root.feed(case) 
+            self.root.feed(cas) 
                     
 
 
