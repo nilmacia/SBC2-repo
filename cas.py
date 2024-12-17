@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import numpy as np
 
 with open("dades/domini.json") as f:
     __domini = json.load(f)
@@ -40,3 +41,12 @@ class Cas:
     @property
     def noms_obres(self):
         return list(noms['obres'][self.obres])
+
+    @staticmethod
+    def guardar(casos, path):
+        casos = [
+            [cas.nombre, cas.edat, cas.temps, cas.dies,
+             *cas.artistes, *cas.periodes, *cas.obres, cas.valoracio]
+        for cas in casos]
+        casos = np.array(casos)
+        np.save('dades/casos', casos)

@@ -3,26 +3,47 @@ from arbre import Arbre
 from cbr import CBR
 from cas import Cas
 
-print('INICIALITZACIÓ')
+print('=== Inicialització ===')
+
+print(' - Generació')
 casos_inicials = generar_casos(1000)
+
+print(' - Recomanació')
 recomanar_random(casos_inicials)
+
+print(' - Valoració')
 for cas in casos_inicials: valorar(cas)
 
+print(' - Retenció')
 arbre = Arbre()
 for cas in casos_inicials: arbre.feed(cas)
 
-print('ENTRENAMENT')
 cbr = CBR(arbre)
 
-casos_entrenament = generar_casos(1000)
-for i, cas in enumerate(casos_entrenament, 1):
-    cbr(cas, quiet=True)
+print('\n=== Baseline ===')
+casos_baseline = generar_casos(100)
+valoracions = []
+for i, cas in enumerate(casos_baseline, 1):
+    cbr(cas)
     if i % 100 == 0:
         arbre.mantenir()
+    valoracions.append(cas.valoracio)
+    print('\r', i, '/', len(casos_baseline), end='')
+baseline = sum(valoracions) / len(valoracions)
+print()
+
+print('\n=== Entrenament ===')
+casos_entrenament = generar_casos(10000)
+for i, cas in enumerate(casos_entrenament, 1):
+    cbr(cas)
+    if i % 100 == 0:
+        arbre.mantenir()
+    print('\r', i, '/', len(casos_entrenament), end='')
+print()
 
 
 # Pas 3: Definir jocs de prova per validar diferents escenaris
-print("\n=== Pas 3: Proves del Sistema ===")
+print("\n=== Proves del Sistema ===")
 jocs_test = [
     [4, 20, 300, 1, ["Vincent van Gogh"], []],  # Cas de prova: Artista conegut, sense període
     [2, 40, 300, 2, ["Gustave Courbet"], ["Realism"]],  # Artista i període coneguts
@@ -37,21 +58,26 @@ jocs_test = [
 ]
 
 valoracions = []
+verbose = False
 for i, joc in enumerate(jocs_test, 1):
-    print(f"\n--- Joc de Prova {i}: ---")
+    if verbose:
+        print(f"\n--- Joc de Prova {i}: ---")
     cas = Cas(*joc)  # Crear un cas de prova
     cbr(cas)
-    if cas.obres is not None:
-        valoracions.append(cas.valoracio)  # Guardar l'avaluació
-        print(f"Obres Recomanades: {cas.noms_obres}")
+    valoracions.append(cas.valoracio)  # Guardar l'avaluació
+    if verbose:
+        print("Obres Recomanades:", end='')
+        print('', *cas.noms_obres, sep='\n - ')
 
 # Pas 4: Resumir resultats
-print("\n=== Pas 4: Resum dels Resultats ===")
+print("\n=== Resum dels Resultats ===")
 print("Avaluacions dels Jocs de Prova:")
 for i, valor in enumerate(valoracions, 1):
-    print(f"Joc de Prova {i}: Valoració = {valor:.4f}")
+    print(f"Valoració {i} = {valor:.4f}")
 
 avg_valoracio = sum(valoracions) / len(valoracions)
-print(f"\nMitjana de Valoracions: {avg_valoracio:.4f}")
+print(f"\nMitjana de Valoracions: {avg_valoracio:.4f}\n")
+print(f"\nBaseline: {baseline:.4f}\n")
+
 
 
