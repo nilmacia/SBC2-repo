@@ -76,8 +76,8 @@ for i, valor in enumerate(valoracions, 1):
     print(f"Valoració {i} = {valor:.4f}")
 
 avg_valoracio = sum(valoracions) / len(valoracions)
-print(f"\nMitjana de Valoracions: {avg_valoracio:.4f}\n")
-print(f"\nBaseline: {baseline:.4f}\n")
+print(f"\nMitjana de Valoracions: {avg_valoracio:.4f}")
+print(f"Baseline: {baseline:.4f}\n")
 
 
 
