@@ -11,7 +11,7 @@ noms = {
 
 class Cas:
     def __init__(self, nombre, edat, t_dia, dies, artistes, periodes):
-        if isinstance(artistes[0], str):
+        if len(artistes) > 0 and isinstance(artistes[0], str):
             artistes = noms['artistes'].isin(artistes).to_numpy()
             periodes = noms['periodes'].isin(periodes).to_numpy()
 
