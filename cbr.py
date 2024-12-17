@@ -102,13 +102,11 @@ class CBR:
         probs_obres /= probs_obres.sum()
 
         probs_obres[recomanacio] = 0.
-        probs_obres /= probs_obres.sum()
 
         while temps_acumulat < case.temps and recomanacio.sum() < obres.shape[0]:
             o = random.choices(range(obres.shape[0]), probs_obres)[0]
             recomanacio[o] = True
             probs_obres[o] = 0.
-            probs_obres /= probs_obres.sum()
             temps_acumulat += obres.iloc[o].Temps
 
         case.obres = recomanacio
