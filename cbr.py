@@ -94,7 +94,7 @@ class CBR:
         for cas_prop, dist in casospropers:
             pes = cas_prop.valoracio * 2 - 1 # Passar a [-1, 1]
             pes = pes * dist
-            puntuacions = case.obres * pes
+            puntuacions = cas_prop.obres * pes
             punts_obres += puntuacions
 
         # Softmax
