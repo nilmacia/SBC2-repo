@@ -186,11 +186,8 @@ class CBR:
         # 2. Reuse
         solution = self.reuse(top_cases, case)
 
-        # 3. Revise
-        revised_solution = self.revise(solution)
-
         # 4. Retain
-        self.retain(case, revised_solution)
+        self.retain(solution)
 
         print("\n=== CRB Finalitzat ===")
-        return revised_solution
+        return solution

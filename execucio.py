@@ -19,9 +19,7 @@ for cas in casos_entrenament:
     cbr.retain(cas)
 
 jocs_test = [
-    [4, 20, 300, 1, ["Vincent van Gogh"], []],
-    ...
-]
+    [4, 20, 300, 1, ["Vincent van Gogh"], []],]
 
 valoracions = []
 for i, joc in enumerate(jocs_test, 1):
